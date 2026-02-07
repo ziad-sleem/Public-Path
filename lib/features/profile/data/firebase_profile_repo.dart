@@ -50,8 +50,6 @@ class FirebaseProfileRepo implements ProfileRepo {
 
   // following process
 
-  // following process
-
   @override
   Future<Followers?> fetchFollowers({required String uid}) async {
     try {

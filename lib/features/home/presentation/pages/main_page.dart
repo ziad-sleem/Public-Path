@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:social_media_app_using_firebase/features/auth/peresnetation/cubits/cubit/auth_cubit.dart';
 import 'package:social_media_app_using_firebase/features/home/presentation/pages/home_page.dart';
+import 'package:social_media_app_using_firebase/features/post/presentation/cubit/post_cubit.dart';
 import 'package:social_media_app_using_firebase/features/profile/presentation/pages/profile_page.dart';
 import 'package:social_media_app_using_firebase/features/search/data/firebase_search_repo.dart';
 import 'package:social_media_app_using_firebase/features/search/presentation/bloc/search_bloc.dart';
@@ -16,6 +17,16 @@ class MainPage extends StatefulWidget {
 
 class _MainPageState extends State<MainPage> {
   int _selectedIndex = 0;
+
+  void _onTabTapped(int index) {
+    // If switching to home tab, refresh posts silently
+    if (index == 0 && _selectedIndex != 0) {
+      context.read<PostCubit>().refreshPosts();
+    }
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -35,11 +46,7 @@ class _MainPageState extends State<MainPage> {
       body: IndexedStack(index: _selectedIndex, children: pages),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedIndex,
-        onTap: (index) {
-          setState(() {
-            _selectedIndex = index;
-          });
-        },
+        onTap: _onTabTapped,
         selectedItemColor: Theme.of(context).colorScheme.primary,
         unselectedItemColor: Colors.grey,
         showSelectedLabels: true,

@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:social_media_app_using_firebase/core/widgets/my_text.dart';
@@ -61,15 +60,21 @@ class PostUserInfo extends StatelessWidget {
                     ),
                     child: ClipOval(
                       child: postUser!.profileImage!.startsWith('http')
-                          ? CachedNetworkImage(
-                              imageUrl: postUser!.profileImage!,
+                          ? Image.network(
+                              postUser!.profileImage!,
                               fit: BoxFit.cover,
                               width: 50,
                               height: 50,
-                              placeholder: (context, url) => Container(
-                                color: Theme.of(context).colorScheme.tertiary,
-                              ),
-                              errorWidget: (context, url, error) =>
+                              loadingBuilder:
+                                  (context, child, loadingProgress) {
+                                    if (loadingProgress == null) return child;
+                                    return Container(
+                                      color: Theme.of(
+                                        context,
+                                      ).colorScheme.tertiary,
+                                    );
+                                  },
+                              errorBuilder: (context, error, stackTrace) =>
                                   _buildErrorIcon(context),
                             )
                           : Image.memory(

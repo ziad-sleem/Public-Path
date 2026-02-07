@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:social_media_app_using_firebase/features/auth/data/firebase_auth_repo.dart';
-import 'package:social_media_app_using_firebase/features/auth/peresnetation/cubits/cubit/auth_cubit.dart';
 import 'package:social_media_app_using_firebase/features/post/domain/entities/comment.dart';
 import 'package:social_media_app_using_firebase/features/post/domain/entities/post.dart';
 import 'package:social_media_app_using_firebase/features/post/domain/repo/post_repo.dart';

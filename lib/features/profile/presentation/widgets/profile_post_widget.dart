@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:social_media_app_using_firebase/features/post/domain/entities/post.dart';
 import 'package:social_media_app_using_firebase/features/profile/presentation/pages/show_post_detials.dart';
@@ -21,13 +20,16 @@ class ProfilePostWidget extends StatelessWidget {
                 ),
               ),
               child: post.imageUrl.startsWith('http')
-                  ? CachedNetworkImage(
-                      imageUrl: post.imageUrl,
+                  ? Image.network(
+                      post.imageUrl,
                       fit: BoxFit.cover,
-                      placeholder: (context, url) => Container(
-                        color: Theme.of(context).colorScheme.tertiary,
-                      ),
-                      errorWidget: (context, url, error) =>
+                      loadingBuilder: (context, child, loadingProgress) {
+                        if (loadingProgress == null) return child;
+                        return Container(
+                          color: Theme.of(context).colorScheme.tertiary,
+                        );
+                      },
+                      errorBuilder: (context, error, stackTrace) =>
                           const Center(child: Icon(Icons.error)),
                     )
                   : Image.memory(
