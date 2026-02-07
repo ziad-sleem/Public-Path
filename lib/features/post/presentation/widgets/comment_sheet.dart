@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:social_media_app_using_firebase/core/theme/colors.dart';
@@ -6,6 +7,7 @@ import 'package:social_media_app_using_firebase/features/auth/peresnetation/cubi
 import 'package:social_media_app_using_firebase/features/post/domain/entities/comment.dart';
 import 'package:social_media_app_using_firebase/features/post/domain/entities/post.dart';
 import 'package:social_media_app_using_firebase/features/post/presentation/cubit/post_cubit.dart';
+import 'package:social_media_app_using_firebase/features/profile/presentation/cubits/cubit/profile_cubit.dart';
 
 class CommentSheet extends StatefulWidget {
   final Post post;
@@ -35,7 +37,34 @@ class _CommentSheetState extends State<CommentSheet> {
 
       context.read<PostCubit>().addComment(widget.post.id, newComment);
       _commentController.clear();
-      // Optionally scroll to bottom or provide feedback
+    }
+  }
+
+  String _formatTimeAgo(DateTime timestamp) {
+    final now = DateTime.now();
+    final difference = now.difference(timestamp);
+
+    if (difference.inSeconds < 60) {
+      final seconds = difference.inSeconds;
+      return seconds <= 1 ? '1 second ago' : '$seconds seconds ago';
+    } else if (difference.inMinutes < 60) {
+      final minutes = difference.inMinutes;
+      return minutes == 1 ? '1 minute ago' : '$minutes minutes ago';
+    } else if (difference.inHours < 24) {
+      final hours = difference.inHours;
+      return hours == 1 ? '1 hour ago' : '$hours hours ago';
+    } else if (difference.inDays < 7) {
+      final days = difference.inDays;
+      return days == 1 ? '1 day ago' : '$days days ago';
+    } else if (difference.inDays < 30) {
+      final weeks = (difference.inDays / 7).floor();
+      return weeks == 1 ? '1 week ago' : '$weeks weeks ago';
+    } else if (difference.inDays < 365) {
+      final months = (difference.inDays / 30).floor();
+      return months == 1 ? '1 month ago' : '$months months ago';
+    } else {
+      final years = (difference.inDays / 365).floor();
+      return years == 1 ? '1 year ago' : '$years years ago';
     }
   }
 
@@ -210,19 +239,7 @@ class _CommentSheetState extends State<CommentSheet> {
                           child: Row(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              CircleAvatar(
-                                radius: 18,
-                                backgroundColor: Theme.of(
-                                  context,
-                                ).colorScheme.tertiary,
-                                child: Icon(
-                                  Icons.person,
-                                  color: Theme.of(
-                                    context,
-                                  ).colorScheme.onSecondary,
-                                  size: 20,
-                                ),
-                              ),
+                              _CommentUserAvatar(userId: comment.userId),
                               const SizedBox(width: 12),
                               Expanded(
                                 child: Column(
@@ -236,8 +253,7 @@ class _CommentSheetState extends State<CommentSheet> {
                                     MyText(text: comment.text, fontSize: 14),
                                     const SizedBox(height: 4),
                                     MyText(
-                                      text:
-                                          '${comment.timestamp.hour}:${comment.timestamp.minute}',
+                                      text: _formatTimeAgo(comment.timestamp),
                                       fontSize: 12,
                                       color: Theme.of(
                                         context,
@@ -308,6 +324,94 @@ class _CommentSheetState extends State<CommentSheet> {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+// Widget to display comment user's profile image
+class _CommentUserAvatar extends StatefulWidget {
+  final String userId;
+
+  const _CommentUserAvatar({required this.userId});
+
+  @override
+  State<_CommentUserAvatar> createState() => _CommentUserAvatarState();
+}
+
+class _CommentUserAvatarState extends State<_CommentUserAvatar> {
+  String? _profileImage;
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchUserProfile();
+  }
+
+  Future<void> _fetchUserProfile() async {
+    try {
+      final profileCubit = context.read<ProfileCubit>();
+      final user = await profileCubit.getUserProfile(widget.userId);
+      if (mounted && user != null) {
+        setState(() {
+          _profileImage = user.profileImage;
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (_isLoading) {
+      return CircleAvatar(
+        radius: 18,
+        backgroundColor: Theme.of(context).colorScheme.tertiary,
+        child: const SizedBox(
+          width: 16,
+          height: 16,
+          child: CircularProgressIndicator(strokeWidth: 2),
+        ),
+      );
+    }
+
+    if (_profileImage != null && _profileImage!.isNotEmpty) {
+      // Check if it's a URL or base64
+      if (_profileImage!.startsWith('http')) {
+        return CircleAvatar(
+          radius: 18,
+          backgroundColor: Theme.of(context).colorScheme.tertiary,
+          backgroundImage: NetworkImage(_profileImage!),
+          onBackgroundImageError: (_, __) {},
+          child: null,
+        );
+      } else {
+        // Base64 image
+        try {
+          return CircleAvatar(
+            radius: 18,
+            backgroundColor: Theme.of(context).colorScheme.tertiary,
+            backgroundImage: MemoryImage(base64Decode(_profileImage!)),
+          );
+        } catch (e) {
+          // Fall through to default icon
+        }
+      }
+    }
+
+    // Default icon
+    return CircleAvatar(
+      radius: 18,
+      backgroundColor: Theme.of(context).colorScheme.tertiary,
+      child: Icon(
+        Icons.person,
+        color: Theme.of(context).colorScheme.onSecondary,
+        size: 20,
       ),
     );
   }
