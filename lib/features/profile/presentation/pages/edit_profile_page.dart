@@ -1,13 +1,15 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:social_media_app_using_firebase/features/auth/domain/entities/app_user.dart';
+import 'package:social_media_app_using_firebase/core/widgets/my_button.dart';
+import 'package:social_media_app_using_firebase/core/widgets/my_text.dart';
+import 'package:social_media_app_using_firebase/features/profile/domain/models/profile_user.dart';
 import 'package:social_media_app_using_firebase/features/profile/presentation/cubits/cubit/profile_cubit.dart';
 import 'package:social_media_app_using_firebase/core/widgets/my_text_field.dart';
 import 'package:social_media_app_using_firebase/core/services/image_picker_service.dart';
 
 class EditProfilePage extends StatefulWidget {
-  final AppUser user;
+  final ProfileUser user;
   const EditProfilePage({super.key, required this.user});
 
   @override
@@ -36,13 +38,13 @@ class _EditProfilePageState extends State<EditProfilePage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Select Image Source'),
+          title: MyText(text: 'Select Image Source'),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               ListTile(
                 leading: Icon(Icons.photo_library),
-                title: Text('Gallery'),
+                title: MyText(text: 'Gallery'),
                 onTap: () {
                   Navigator.pop(context);
                   _pickImageFromGallery();
@@ -50,7 +52,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
               ),
               ListTile(
                 leading: Icon(Icons.camera_alt),
-                title: Text('Camera'),
+                title: MyText(text: 'Camera'),
                 onTap: () {
                   Navigator.pop(context);
                   _pickImageFromCamera();
@@ -67,20 +69,22 @@ class _EditProfilePageState extends State<EditProfilePage> {
   Future<void> _pickImageFromGallery() async {
     try {
       final imageFile = await _imagePickerService.pickImageFromGallery();
-      if (imageFile != null) {
+      if (imageFile != null && mounted) {
         setState(() {
           _selectedImage = imageFile;
         });
         // Convert to base64
         final base64String = await _imagePickerService.imageToBase64(imageFile);
-        setState(() {
-          _selectedImageBase64 = base64String;
-        });
+        if (mounted) {
+          setState(() {
+            _selectedImageBase64 = base64String;
+          });
+        }
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Failed to pick image: $e'),
+          content: MyText(text: 'Failed to pick image: $e'),
           backgroundColor: Colors.red,
         ),
       );
@@ -91,20 +95,22 @@ class _EditProfilePageState extends State<EditProfilePage> {
   Future<void> _pickImageFromCamera() async {
     try {
       final imageFile = await _imagePickerService.pickImageFromCamera();
-      if (imageFile != null) {
+      if (imageFile != null && mounted) {
         setState(() {
           _selectedImage = imageFile;
         });
         // Convert to base64
         final base64String = await _imagePickerService.imageToBase64(imageFile);
-        setState(() {
-          _selectedImageBase64 = base64String;
-        });
+        if (mounted) {
+          setState(() {
+            _selectedImageBase64 = base64String;
+          });
+        }
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Failed to pick image: $e'),
+          content: MyText(text: 'Failed to pick image: $e'),
           backgroundColor: Colors.red,
         ),
       );
@@ -125,7 +131,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
       bio: bio.isNotEmpty ? bio : null,
       username: userName,
       // Only update profile image if a new image was selected
-      profileImage: _selectedImageBase64 != null ? _selectedImageBase64 : null,
+      profileImage: _selectedImageBase64,
     );
   }
 
@@ -140,12 +146,12 @@ class _EditProfilePageState extends State<EditProfilePage> {
             body: Column(
               children: [
                 CircularProgressIndicator.adaptive(),
-                Text("Loading..."),
+                MyText(text: "Loading..."),
               ],
             ),
           );
         } else if (state is ProfileError) {
-          return Text("NO USER FOUND");
+          return MyText(text: "NO USER FOUND");
         } else {
           return buildEditPage(size: size);
         }
@@ -160,10 +166,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
   Widget buildEditPage({double uploadProgress = 0.0, required Size size}) {
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.background,
-
       appBar: AppBar(
-        title: Text("Edit Profile"),
+        title: MyText(text: "Edit Profile"),
 
         foregroundColor: Theme.of(context).colorScheme.primary,
       ),
@@ -244,10 +248,13 @@ class _EditProfilePageState extends State<EditProfilePage> {
                       ],
                     ),
                     SizedBox(height: size.height * 0.02),
-                    ElevatedButton.icon(
-                      onPressed: _showImageSourceDialog,
-                      icon: Icon(Icons.image),
-                      label: Text("Select Image"),
+                    SizedBox(
+                      width: size.width * 0.5,
+
+                      child: MyButton(
+                        text: "Select Image",
+                        onTap: _showImageSourceDialog,
+                      ),
                     ),
                   ],
                 ),
@@ -256,9 +263,10 @@ class _EditProfilePageState extends State<EditProfilePage> {
               SizedBox(height: size.height * 0.04),
 
               // edit user name
-              Text(
-                'Edit Name',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              MyText(
+                text: 'Edit Name',
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
               ),
               SizedBox(height: size.height * 0.02),
 
@@ -270,9 +278,10 @@ class _EditProfilePageState extends State<EditProfilePage> {
               SizedBox(height: size.height * 0.05),
 
               // edit bio
-              Text(
-                'Edit Bio',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              MyText(
+                text: 'Edit Bio',
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
               ),
               SizedBox(height: size.height * 0.02),
 
@@ -284,13 +293,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
               SizedBox(height: size.height * 0.05),
               // Save button
               Center(
-                child: ElevatedButton.icon(
-                  onPressed: updateProfile,
-                  icon: Icon(Icons.save_alt_rounded),
-                  label: Text("Save Changes"),
-                  style: ElevatedButton.styleFrom(
-                    padding: EdgeInsets.symmetric(horizontal: 32, vertical: 16),
-                  ),
+                child: SizedBox(
+                  width: size.width * 0.5,
+                  child: MyButton(text: "Save Changes", onTap: updateProfile),
                 ),
               ),
               SizedBox(height: size.height * 0.02),

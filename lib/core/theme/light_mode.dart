@@ -1,15 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:social_media_app_using_firebase/core/theme/colors.dart';
 
 ThemeData lightMode = ThemeData(
   brightness: Brightness.light,
+  fontFamily: 'InstagramSans',
   colorScheme: ColorScheme.light(
-    background: Colors.grey.shade300,
-    primary: Colors.grey.shade200,
-    secondary: Colors.grey.shade400,
-    inversePrimary: Colors.grey.shade800,
+    background: AppColors.igWhite,
+    onBackground: AppColors.igBlack,
+    surface: AppColors.igWhite,
+    onSurface: AppColors.igBlack,
+    primary: AppColors.igBlue,
+    onPrimary: AppColors.igWhite,
+    secondary: AppColors.igLightGray,
+    tertiary: AppColors.igLightBorder,
+    inversePrimary: AppColors.igBlack,
   ),
   textTheme: ThemeData.light().textTheme.apply(
-    bodyColor: Colors.grey[800],
-    displayColor: Colors.black,
+    fontFamily: 'InstagramSans',
+    bodyColor: AppColors.igBlack,
+    displayColor: AppColors.igBlack,
   ),
 );

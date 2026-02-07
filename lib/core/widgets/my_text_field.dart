@@ -70,26 +70,27 @@ class _MyTextFormFieldState extends State<MyTextFormField> {
             : widget.emailOrPasswordOrUserOrBioOrName == "editBio"
             ? Icon(Icons.edit_attributes)
             : Icon(Icons.abc),
-        prefixIconColor: AppColors.mySecondTextColor,
+        prefixIconColor: AppColors.igGrey,
         filled: true,
+        fillColor: Theme.of(context).colorScheme.secondary,
         border: OutlineInputBorder(
           borderSide: BorderSide.none,
-          borderRadius: BorderRadius.circular(20), // adjust as needed
+          borderRadius: BorderRadius.circular(8),
         ),
         enabledBorder: OutlineInputBorder(
           borderSide: BorderSide.none,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(8),
         ),
         focusedBorder: OutlineInputBorder(
           borderSide: BorderSide.none,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(8),
         ),
         // Add show/hide password icon for password fields
         suffixIcon: isPassword
             ? IconButton(
                 icon: Icon(
                   _obscurePassword ? Icons.visibility_off : Icons.visibility,
-                  color: AppColors.mySecondTextColor,
+                  color: AppColors.igGrey,
                 ),
                 onPressed: () {
                   setState(() {

@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -6,38 +7,45 @@ import 'package:social_media_app_using_firebase/features/auth/data/firebase_auth
 import 'package:social_media_app_using_firebase/features/auth/domain/repos/auth_repo.dart';
 import 'package:social_media_app_using_firebase/features/auth/peresnetation/cubits/cubit/auth_cubit.dart';
 import 'package:social_media_app_using_firebase/features/auth/peresnetation/cubits/cubit/auth_state.dart';
-import 'package:social_media_app_using_firebase/features/auth/peresnetation/cubits/pages/login_page.dart';
-import 'package:social_media_app_using_firebase/features/home/presentation/pages/home_page.dart';
+import 'package:social_media_app_using_firebase/features/auth/peresnetation/pages/login_page.dart';
+import 'package:social_media_app_using_firebase/features/auth/peresnetation/pages/splash_page.dart';
+import 'package:social_media_app_using_firebase/features/home/presentation/pages/main_page.dart';
 import 'package:social_media_app_using_firebase/features/post/presentation/cubit/post_cubit.dart';
 import 'package:social_media_app_using_firebase/features/profile/presentation/cubits/cubit/profile_cubit.dart';
 import 'package:social_media_app_using_firebase/core/theme/dark_mode.dart';
 import 'package:social_media_app_using_firebase/core/theme/light_mode.dart';
+import 'package:social_media_app_using_firebase/core/widgets/my_text.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
+  // Enable offline persistence for Firestore
+  FirebaseFirestore.instance.settings = const Settings(
+    persistenceEnabled: true,
+    cacheSizeBytes: Settings.CACHE_SIZE_UNLIMITED,
+  );
+
   runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    final profileRepo = FirebaseAuthRepo();
     return MultiBlocProvider(
       providers: [
         BlocProvider(
           create: (context) {
             final AuthRepo authRepo = FirebaseAuthRepo();
             final cubit = AuthCubit(authRepo: authRepo);
-            // Check authentication state when app starts
             cubit.checkAuth();
             return cubit;
           },
         ),
-        BlocProvider(create: (context) => ProfileCubit(profileRepo)),
+        BlocProvider(create: (context) => ProfileCubit()),
+        BlocProvider(create: (context) => PostCubit()),
       ],
       child: Builder(
         builder: (context) {
@@ -46,28 +54,28 @@ class MyApp extends StatelessWidget {
             theme: lightMode,
             darkTheme: darkMode,
             home: BlocConsumer<AuthCubit, AuthState>(
-              bloc: BlocProvider.of<AuthCubit>(context),
               builder: (context, state) {
+                print("App Auth State: $state");
                 if (state is Authenticated) {
-                  return BlocProvider(
-                    create: (context) => PostCubit(),
-                    child: HomePage(),
-                  );
+                  return const MainPage();
                 } else if (state is Unauthenticated) {
-                  return LoginPage();
+                  return const LoginPage();
                 } else {
-                  // Show loading screen while checking auth state
-                  return Scaffold(
-                    body: Center(child: CircularProgressIndicator()),
-                  );
+                  return const SplashPage();
                 }
               },
               listener: (context, state) {
+                if (state is Authenticated) {
+                  // Ensure we clear any pushed pages (like RegisterPage) when we log in
+                  if (Navigator.canPop(context)) {
+                    Navigator.of(context).popUntil((route) => route.isFirst);
+                  }
+                }
                 if (state is AuthError) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                      backgroundColor: Colors.grey,
-                      content: Text('Incorrect Password or Email'),
+                      backgroundColor: Colors.red,
+                      content: MyText(text: state.errorMessage),
                     ),
                   );
                 }

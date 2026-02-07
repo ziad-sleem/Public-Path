@@ -1,11 +1,27 @@
 import 'package:flutter/material.dart';
 
 class AppColors {
-  static const Color myWhite = Colors.white;
-  static const Color myBlack = Colors.black;
-  static const Color myGray = Color(0xffF9F9F9);
-  static const Color myGoldenRed = Color(0xffDD8560);
-  static const Color mySecondTextColor = Color(0xff555555);
-  static const Color myStrongGray = Color.fromARGB(255, 167, 167, 167);
+  static const Color igBlue = Color(0xFF0095F6);
+  static const Color igWhite = Color(0xFFFFFFFF);
+  static const Color igBlack = Color(0xFF000000);
+
+  // Light Mode Specifics
+  static const Color igLightGray = Color(0xFFFAFAFA);
+  static const Color igLightBorder = Color(0xFFDBDBDB);
+
+  // Dark Mode Specifics
+  static const Color igDarkGray = Color(0xFF121212);
+  static const Color igDarkBorder = Color(0xFF262626);
+
+  // General shades
+  static const Color igGrey = Color(0xFF8E8E8E);
+
+  // Legacy mapping to prevent breakages while refactoring
+  static const Color mySecondTextColor = igGrey;
+  static const Color myStrongGray = igGrey;
   static const Color myTransparent = Colors.transparent;
+
+
+    static const Color myRed = Colors.red;
+
 }

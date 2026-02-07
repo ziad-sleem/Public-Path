@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:social_media_app_using_firebase/core/widgets/my_text.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:social_media_app_using_firebase/features/auth/peresnetation/cubits/cubit/auth_cubit.dart';
 import 'package:social_media_app_using_firebase/features/profile/presentation/pages/profile_page.dart';
@@ -41,7 +42,9 @@ class MyDrawer extends StatelessWidget {
                 // navigate
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => ProfilePage(uid: uid)),
+                  MaterialPageRoute(
+                    builder: (context) => ProfilePage(uid: uid),
+                  ),
                 );
               }),
 
@@ -51,7 +54,7 @@ class MyDrawer extends StatelessWidget {
               }),
 
               // setting tile
-              myDrawerTile("SEARCH", Icons.settings_outlined, () {
+              myDrawerTile("SETTINGS", Icons.settings_outlined, () {
                 Navigator.pop(context);
               }),
 
@@ -74,6 +77,10 @@ class MyDrawer extends StatelessWidget {
     final IconData icon,
     final void Function()? onTap,
   ) {
-    return ListTile(title: Text(title), leading: Icon(icon), onTap: onTap);
+    return ListTile(
+      title: MyText(text: title),
+      leading: Icon(icon),
+      onTap: onTap,
+    );
   }
 }

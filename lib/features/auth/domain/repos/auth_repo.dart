@@ -15,12 +15,6 @@ abstract class AuthRepo {
   );
   Future<void> logout();
   Future<AppUser?> getCurrentUser();
-  Future<AppUser?> getUserData(String ui);
-  Future<void> updateUser({
-    required String uid,
-    String? username,
-    String? bio,
-    String? profileImage,
-    String? coverImage,
-  });
+  Future<AppUser?> getUserData(String uid);
+  
 }
