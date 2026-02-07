@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:social_media_app_using_firebase/features/auth/peresnetation/cubits/pages/login_page.dart';
-import 'package:social_media_app_using_firebase/features/auth/peresnetation/cubits/pages/register_page.dart';
+import 'package:social_media_app_using_firebase/features/auth/peresnetation/pages/login_page.dart';
+import 'package:social_media_app_using_firebase/features/auth/peresnetation/pages/register_page.dart';
 
 class AuthPage extends StatefulWidget {
   const AuthPage({super.key});
@@ -16,7 +16,7 @@ class _AuthPageState extends State<AuthPage> {
   // toggle between login and register page
   void togglePages() {
     setState(() {
-      showLoginPage != showLoginPage;
+      showLoginPage = !showLoginPage;
     });
   }
 

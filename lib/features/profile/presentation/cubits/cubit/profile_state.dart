@@ -7,7 +7,7 @@ final class ProfileInitial extends ProfileState {}
 final class ProfileLoading extends ProfileState {}
 
 final class ProfileLoaded extends ProfileState {
-  final AppUser profileUser;
+  final ProfileUser profileUser;
 
   ProfileLoaded({required this.profileUser});
 }

@@ -1,8 +1,9 @@
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:social_media_app_using_firebase/core/services/cloudinary_service.dart';
+import 'package:social_media_app_using_firebase/features/post/domain/entities/comment.dart';
 import 'package:social_media_app_using_firebase/features/post/domain/entities/post.dart';
 import 'package:social_media_app_using_firebase/features/post/domain/repo/post_repo.dart';
 import 'package:social_media_app_using_firebase/features/post/data/firebase_post_repo.dart';
@@ -11,7 +12,7 @@ part 'post_state.dart';
 
 class PostCubit extends Cubit<PostState> {
   final PostRepo postRepo = FirebasePostRepo();
-
+  final CloudinaryService _cloudinaryService = CloudinaryService();
   PostCubit() : super(PostInitial());
 
   // create new post
@@ -20,12 +21,15 @@ class PostCubit extends Cubit<PostState> {
       emit(PostLoading());
       emit(PostUpLoading());
 
-      // Convert image to base64 if provided
       String imageUrl = post.imageUrl;
+      // Upload to Cloudinary if image is provided
       if (image != null) {
-        final bytes = await image.readAsBytes();
-        final base64String = base64Encode(bytes);
-        imageUrl = base64String;
+        final uploadedUrl = await _cloudinaryService.uploadImage(image);
+        if (uploadedUrl != null) {
+          imageUrl = uploadedUrl;
+        } else {
+          throw Exception("Failed to upload image to Cloudinary");
+        }
       }
 
       // Create updated post with image URL
@@ -36,6 +40,8 @@ class PostCubit extends Cubit<PostState> {
         text: post.text,
         imageUrl: imageUrl,
         timeStamp: post.timeStamp,
+        likes: [],
+        comments: [],
       );
 
       // Save post to repository
@@ -44,7 +50,7 @@ class PostCubit extends Cubit<PostState> {
       // re-fetch all posts
       fetchAllPosts();
     } catch (e) {
-      emit(PostError(errorMessage: 'Faild to create post: ${e.toString()}'));
+      emit(PostError(errorMessage: 'Failed to create post: ${e.toString()}'));
     }
   }
 
@@ -55,7 +61,7 @@ class PostCubit extends Cubit<PostState> {
       final posts = await postRepo.fectchAllPosts();
       emit(PostLoaded(posts: posts));
     } catch (e) {
-      emit(PostError(errorMessage: 'Faild to fetch post: ${e.toString()}'));
+      emit(PostError(errorMessage: 'Failed to fetch post: ${e.toString()}'));
     }
   }
 
@@ -66,7 +72,7 @@ class PostCubit extends Cubit<PostState> {
       final posts = await postRepo.fectchAllPostsByUserId(userId);
       emit(PostLoaded(posts: posts));
     } catch (e) {
-      emit(PostError(errorMessage: 'Faild to fetch post: ${e.toString()}'));
+      emit(PostError(errorMessage: 'Failed to fetch post: ${e.toString()}'));
     }
   }
 
@@ -75,7 +81,46 @@ class PostCubit extends Cubit<PostState> {
     try {
       await postRepo.deletePost(postId);
     } catch (e) {
-      emit(PostError(errorMessage: 'Faild to fetch post: ${e.toString()}'));
+      emit(PostError(errorMessage: 'Failed to delete post: ${e.toString()}'));
+    }
+  }
+
+  // toggle like
+  Future<void> toggleLikePost({
+    required String postId,
+    required String userId,
+  }) async {
+    try {
+      await postRepo.toggleLikePost(postId: postId, userId: userId);
+    } catch (e) {
+      emit(PostError(errorMessage: 'Failed to Like post: ${e.toString()}'));
+    }
+  }
+
+  // add a comment
+  Future<void> addComment(String postId, Comment comment) async {
+    try {
+      await postRepo.addComment(postId: postId, comment: comment);
+      fetchAllPosts();
+    } catch (e) {
+      emit(
+        PostError(
+          errorMessage: 'Failed to add comment to post: ${e.toString()}',
+        ),
+      );
+    }
+  }
+
+  // delete a comment
+  Future<void> deleteComment(String postId, Comment comment) async {
+    try {
+      await postRepo.deleteComment(postId: postId, comment: comment);
+    } catch (e) {
+      emit(
+        PostError(
+          errorMessage: 'Failed to delete comment from post: ${e.toString()}',
+        ),
+      );
     }
   }
 }

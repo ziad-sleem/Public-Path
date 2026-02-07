@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:social_media_app_using_firebase/features/auth/domain/entities/app_user.dart';
 import 'package:social_media_app_using_firebase/features/auth/domain/repos/auth_repo.dart';
+import 'package:social_media_app_using_firebase/features/profile/domain/models/profile_user.dart';
 
 class FirebaseAuthRepo implements AuthRepo {
   // get the only instance or FirebaseAuth you can get and fill up the method by it
@@ -17,15 +18,25 @@ class FirebaseAuthRepo implements AuthRepo {
     String password,
   ) async {
     try {
+      print("Starting login process for $email...");
       // attempt sign in
       UserCredential userCredential = await firebaseAuth
           .signInWithEmailAndPassword(email: email, password: password);
 
-      // create user
-      return getUserData(userCredential.user!.uid);
+      final uid = userCredential.user!.uid;
+      print("Firebase Auth success. Fetching user data for $uid...");
+
+      final user = await getUserData(uid);
+      if (user == null) {
+        print("CRITICAL: User document missing in Firestore for $uid!");
+      } else {
+        print("Login successful for ${user.username}");
+      }
+      return user;
     }
     // catch any errors
     catch (e) {
+      print("Login error: $e");
       throw Exception('login failed: ${e.toString()}');
     }
   }
@@ -38,34 +49,46 @@ class FirebaseAuthRepo implements AuthRepo {
     String password,
   ) async {
     try {
+      print("Starting registration for $email...");
       // attempt sign up
       UserCredential userCredential = await firebaseAuth
           .createUserWithEmailAndPassword(email: email, password: password);
 
       // create user
       final uid = userCredential.user!.uid;
+      print("Firebase Auth account created: $uid");
 
-      final user = AppUser(
+      // auth user
+      final user = AppUser(uid: uid, username: name, email: email);
+
+      // profile user
+      final profileUser = ProfileUser(
+        bio: null,
+        profileImageUrl: null,
         uid: uid,
         username: name,
         email: email,
-        createdAt: DateTime.now(),
-        bio: "",
-        followersCount: 0,
-        followingCount: 0,
-        isVerified: false,
-        profileImage: null,
       );
 
-      // save user data in firestore
+      print("Saving user data to Firestore...");
+      // save auth user data in firestore
       await firebaseFirestore.collection("users").doc(uid).set(user.toMap());
 
+      print("Saving profile data to Firestore...");
+      // save profile user data in firestore
+      await firebaseFirestore
+          .collection("usersProfile")
+          .doc(uid)
+          .set(profileUser.toMap());
+
+      print("Registration complete for $name");
       // return user
       return user;
     }
     // catch any errors
     catch (e) {
-      throw Exception('creae an account failed: ${e.toString()}');
+      print("Registration error: $e");
+      throw Exception('create an account failed: ${e.toString()}');
     }
   }
 
@@ -73,6 +96,7 @@ class FirebaseAuthRepo implements AuthRepo {
   @override
   Future<void> logout() async {
     try {
+      print("Logging out...");
       await firebaseAuth.signOut();
     } catch (e) {
       throw Exception('logout failed: ${e.toString()}');
@@ -91,37 +115,24 @@ class FirebaseAuthRepo implements AuthRepo {
     return getUserData(firebaseAuth.currentUser!.uid);
   }
 
+  /// fetch user data for auth
   @override
   Future<AppUser?> getUserData(String uid) async {
-    final snapshot = await firebaseFirestore.collection("users").doc(uid).get();
-
-    if (!snapshot.exists) return null;
-
-    return AppUser.fromMap(snapshot.data()!);
-  }
-
-  @override
-  Future<void> updateUser({
-    required String uid,
-    String? username,
-    String? bio,
-    String? profileImage,
-    String? coverImage,
-  }) async {
     try {
-      final Map<String, dynamic> data = {}; 
+      final snapshot = await firebaseFirestore
+          .collection("users")
+          .doc(uid)
+          .get();
 
-      if (username != null) data['username'] = username;
-      if (bio != null) data['bio'] = bio;
-      if (profileImage != null) data['profileImage'] = profileImage;
-      if (coverImage != null) data['coverImage'] = coverImage;
+      if (!snapshot.exists) {
+        print("No document found in 'users' collection for UID: $uid");
+        return null;
+      }
 
-      // nothing to update
-      if (data.isEmpty) return;
-
-      await firebaseFirestore.collection("users").doc(uid).update(data);
+      return AppUser.fromMap(snapshot.data()!);
     } catch (e) {
-      throw Exception('update user failed: ${e.toString()}');
+      print("Error fetching user data from Firestore: $e");
+      return null;
     }
   }
 }

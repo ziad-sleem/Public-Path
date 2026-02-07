@@ -1,15 +1,32 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:social_media_app_using_firebase/core/widgets/my_button.dart';
 import 'package:social_media_app_using_firebase/features/auth/peresnetation/cubits/cubit/auth_cubit.dart';
-import 'package:social_media_app_using_firebase/features/auth/peresnetation/cubits/pages/register_page.dart';
+import 'package:social_media_app_using_firebase/features/auth/peresnetation/pages/register_page.dart';
+import 'package:social_media_app_using_firebase/core/widgets/my_text.dart';
 import 'package:social_media_app_using_firebase/core/widgets/my_text_field.dart';
+import 'package:social_media_app_using_firebase/features/auth/peresnetation/widgets/auth_page_banar.dart';
 
-class LoginPage extends StatelessWidget {
-  LoginPage({super.key});
+class LoginPage extends StatefulWidget {
+  const LoginPage({super.key});
 
+  @override
+  State<LoginPage> createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> {
   TextEditingController emailController = TextEditingController();
+
   TextEditingController passwordController = TextEditingController();
+
   final _formKey = GlobalKey<FormState>();
+
+  @override
+  void dispose() {
+    emailController.dispose();
+    passwordController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -46,15 +63,9 @@ class LoginPage extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  SizedBox(height: size.height * 0.1),
-                  Text(
-                    "Login Account",
-                    style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
-                  ),
-                  Text("Login Account", style: TextStyle()),
-                  SizedBox(height: size.height * 0.2),
+                AuthPageBanar(authType: 'login'),
                   // email
-                  Text("EMAIL", style: TextStyle(fontSize: 20)),
+                  MyText(text: "EMAIL", fontSize: 20),
                   SizedBox(height: size.height * 0.01),
 
                   MyTextFormField(
@@ -65,7 +76,7 @@ class LoginPage extends StatelessWidget {
                   SizedBox(height: size.height * 0.02),
 
                   // password
-                  Text("PASSWORD", style: TextStyle(fontSize: 20)),
+                  MyText(text: "PASSWORD", fontSize: 20),
                   SizedBox(height: size.height * 0.01),
 
                   MyTextFormField(
@@ -78,10 +89,10 @@ class LoginPage extends StatelessWidget {
                     alignment: Alignment.bottomRight,
                     child: TextButton(
                       onPressed: null,
-                      child: Text('Forget password'),
+                      child: MyText(text: 'Forget password'),
                     ),
                   ),
-                  SizedBox(height: size.height * 0.1),
+                  SizedBox(height: size.height * 0.07),
 
                   TextButton(
                     onPressed: () {
@@ -90,22 +101,21 @@ class LoginPage extends StatelessWidget {
                         MaterialPageRoute(builder: (context) => RegisterPage()),
                       );
                     },
-                    child: Text(
-                      'Don\'t have and account? Register.',
-                      style: TextStyle(color: colorScheme.inversePrimary),
+                    child: MyText(
+                      text: 'Don\'t have an account? Register.',
+                      color: colorScheme.inversePrimary,
                     ),
                   ),
-                  ElevatedButton(
-                    onPressed: () {
+                  SizedBox(height: size.height * 0.02),
+
+                  MyButton(
+                    text: "LOGIN",
+                    onTap: () {
                       if (_formKey.currentState!.validate()) {
                         // If the form is valid, proceed to login
                         login();
                       }
                     },
-                    child: Text(
-                      "LOGIN",
-                      style: TextStyle(color: colorScheme.inversePrimary),
-                    ),
                   ),
                 ],
               ),

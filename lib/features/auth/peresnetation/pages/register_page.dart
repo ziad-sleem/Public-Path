@@ -1,17 +1,36 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:social_media_app_using_firebase/core/widgets/my_button.dart';
 import 'package:social_media_app_using_firebase/features/auth/peresnetation/cubits/cubit/auth_cubit.dart';
-import 'package:social_media_app_using_firebase/features/auth/peresnetation/cubits/pages/login_page.dart';
+import 'package:social_media_app_using_firebase/features/auth/peresnetation/pages/login_page.dart';
 
+import 'package:social_media_app_using_firebase/core/widgets/my_text.dart';
 import 'package:social_media_app_using_firebase/core/widgets/my_text_field.dart';
+import 'package:social_media_app_using_firebase/features/auth/peresnetation/widgets/auth_page_banar.dart';
 
-class RegisterPage extends StatelessWidget {
-  RegisterPage({super.key});
+class RegisterPage extends StatefulWidget {
+  const RegisterPage({super.key});
 
+  @override
+  State<RegisterPage> createState() => _RegisterPageState();
+}
+
+class _RegisterPageState extends State<RegisterPage> {
   TextEditingController emailController = TextEditingController();
+
   TextEditingController userNameController = TextEditingController();
+
   TextEditingController passwordController = TextEditingController();
+
   final _formKey = GlobalKey<FormState>();
+
+  @override
+  void dispose() {
+    emailController.dispose();
+    userNameController.dispose();
+    passwordController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -32,9 +51,9 @@ class RegisterPage extends StatelessWidget {
       }
       // fields are empty => display error
       else {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Please complete all fields')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: MyText(text: 'Please complete all fields')),
+        );
       }
     }
 
@@ -55,15 +74,9 @@ class RegisterPage extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  SizedBox(height: size.height * 0.1),
-                  Text(
-                    "Create Account",
-                    style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
-                  ),
-                  Text("Create Account", style: TextStyle()),
-                  SizedBox(height: size.height * 0.2),
+                  AuthPageBanar(authType: ''),
                   // email
-                  Text("Name", style: TextStyle(fontSize: 20)),
+                  MyText(text: "Name", fontSize: 20),
                   SizedBox(height: size.height * 0.01),
 
                   MyTextFormField(
@@ -73,7 +86,7 @@ class RegisterPage extends StatelessWidget {
                   ),
                   SizedBox(height: size.height * 0.02),
                   // email
-                  Text("EMAIL", style: TextStyle(fontSize: 20)),
+                  MyText(text: "EMAIL", fontSize: 20),
                   SizedBox(height: size.height * 0.01),
 
                   MyTextFormField(
@@ -84,7 +97,7 @@ class RegisterPage extends StatelessWidget {
                   SizedBox(height: size.height * 0.02),
 
                   // password
-                  Text("PASSWORD", style: TextStyle(fontSize: 20)),
+                  MyText(text: "PASSWORD", fontSize: 20),
                   SizedBox(height: size.height * 0.01),
 
                   MyTextFormField(
@@ -92,7 +105,7 @@ class RegisterPage extends StatelessWidget {
                     hintText: "PASSWORD",
                     emailOrPasswordOrUserOrBioOrName: 'password',
                   ),
-                  SizedBox(height: size.height * 0.1),
+                  SizedBox(height: size.height * 0.05),
                   TextButton(
                     onPressed: () {
                       Navigator.push(
@@ -100,22 +113,21 @@ class RegisterPage extends StatelessWidget {
                         MaterialPageRoute(builder: (context) => LoginPage()),
                       );
                     },
-                    child: Text(
-                      "Already have an account, loing here",
-                      style: TextStyle(color: colorScheme.inversePrimary),
+
+                    child: MyText(
+                      text: "Already have an account, login here",
+                      color: colorScheme.inversePrimary,
                     ),
                   ),
+                  SizedBox(height: size.height * 0.02),
 
-                  ElevatedButton(
-                    onPressed: () {
+                  MyButton(
+                    text: "SIGN UP",
+                    onTap: () {
                       if (_formKey.currentState!.validate()) {
                         signUp();
                       }
                     },
-                    child: Text(
-                      "SIGN UP",
-                      style: TextStyle(color: colorScheme.inversePrimary),
-                    ),
                   ),
                 ],
               ),
