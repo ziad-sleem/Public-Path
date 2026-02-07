@@ -101,6 +101,29 @@ class _ProfilePageState extends State<ProfilePage> {
     }
   }
 
+  void _showLogoutDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const MyText(text: 'Logout'),
+        content: const MyText(text: 'Are you sure you want to logout?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const MyText(text: 'Cancel'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+              authCubit.logout();
+            },
+            child: MyText(text: 'Logout', color: Colors.red),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
@@ -123,6 +146,15 @@ class _ProfilePageState extends State<ProfilePage> {
             appBar: AppBar(
               title: MyText(text: user.username),
               foregroundColor: Theme.of(context).colorScheme.primary,
+              actions: [
+                // Show logout button only on own profile
+                if (authCubit.currentUser!.uid == widget.uid)
+                  IconButton(
+                    icon: const Icon(Icons.logout),
+                    tooltip: 'Logout',
+                    onPressed: () => _showLogoutDialog(context),
+                  ),
+              ],
             ),
             body: SingleChildScrollView(
               padding: const EdgeInsets.symmetric(horizontal: 15.0),
