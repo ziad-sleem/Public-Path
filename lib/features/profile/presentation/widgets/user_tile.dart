@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:social_media_app_using_firebase/core/widgets/my_text.dart';
@@ -45,14 +44,20 @@ class UserTile extends StatelessWidget {
     if (user.profileImage != null && user.profileImage!.isNotEmpty) {
       if (user.profileImage!.startsWith('http')) {
         return ClipOval(
-          child: CachedNetworkImage(
-            imageUrl: user.profileImage!,
+          child: Image.network(
+            user.profileImage!,
             width: 40,
             height: 40,
             fit: BoxFit.cover,
-            placeholder: (context, url) =>
-                const CircularProgressIndicator.adaptive(),
-            errorWidget: (context, url, error) => Icon(
+            loadingBuilder: (context, child, loadingProgress) {
+              if (loadingProgress == null) return child;
+              return const SizedBox(
+                width: 40,
+                height: 40,
+                child: CircularProgressIndicator.adaptive(),
+              );
+            },
+            errorBuilder: (context, error, stackTrace) => Icon(
               Icons.person,
               color: Theme.of(context).colorScheme.inversePrimary,
             ),

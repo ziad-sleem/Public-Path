@@ -1,10 +1,10 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:social_media_app_using_firebase/core/widgets/my_button.dart';
 import 'package:social_media_app_using_firebase/core/widgets/my_text.dart';
 import 'package:social_media_app_using_firebase/features/auth/peresnetation/cubits/cubit/auth_cubit.dart';
 import 'package:social_media_app_using_firebase/features/post/presentation/cubit/post_cubit.dart';
+import 'package:social_media_app_using_firebase/features/post/domain/entities/post.dart';
 import 'package:social_media_app_using_firebase/features/profile/presentation/cubits/cubit/profile_cubit.dart';
 import 'package:social_media_app_using_firebase/features/profile/presentation/pages/edit_profile_page.dart';
 import 'package:social_media_app_using_firebase/core/services/image_picker_service.dart';
@@ -21,26 +21,54 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  // cubits
+  // Create a local ProfileCubit for this page only
+  late final ProfileCubit _localProfileCubit;
   late final authCubit = context.read<AuthCubit>();
-  late final profileCubit = context.read<ProfileCubit>();
   final ImagePickerService _imagePickerService = ImagePickerService();
 
   bool isFollowing = false;
+  List<Post> _userPosts = [];
+  bool _isLoadingPosts = false;
 
-  // on startup
   @override
   void initState() {
     super.initState();
+    _localProfileCubit = ProfileCubit();
 
-    // load user profile data
-    profileCubit.fetchUserProfile(widget.uid);
-    context.read<PostCubit>().fetchAllPostsByUserId(userId: widget.uid);
+    // load user profile data using local cubit
+    _localProfileCubit.fetchUserProfile(widget.uid);
+    _fetchUserPosts();
     checkFollowStatus();
   }
 
+  @override
+  void dispose() {
+    _localProfileCubit.close();
+    super.dispose();
+  }
+
+  Future<void> _fetchUserPosts() async {
+    setState(() => _isLoadingPosts = true);
+    try {
+      final posts = await context
+          .read<PostCubit>()
+          .postRepo
+          .fectchAllPostsByUserId(widget.uid);
+      if (mounted) {
+        setState(() {
+          _userPosts = posts;
+          _isLoadingPosts = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() => _isLoadingPosts = false);
+      }
+    }
+  }
+
   Future<void> checkFollowStatus() async {
-    final followers = await profileCubit.getFollowers(widget.uid);
+    final followers = await _localProfileCubit.getFollowers(widget.uid);
     if (mounted) {
       setState(() {
         isFollowing = followers.contains(authCubit.currentUser!.uid);
@@ -60,7 +88,7 @@ class _ProfilePageState extends State<ProfilePage> {
     try {
       final bool wasFollowing =
           !isFollowing; // Since we already flipped it in setState
-      await profileCubit.toggleFollow(
+      await _localProfileCubit.toggleFollow(
         currentUserId,
         targetUserId,
         wasFollowing,
@@ -77,7 +105,7 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     return BlocBuilder<ProfileCubit, ProfileState>(
-      bloc: BlocProvider.of<ProfileCubit>(context),
+      bloc: _localProfileCubit, // Use local cubit instead of global
       builder: (context, state) {
         if (state is ProfileLoading) {
           return Scaffold(
@@ -94,7 +122,7 @@ class _ProfilePageState extends State<ProfilePage> {
           return Scaffold(
             appBar: AppBar(
               title: MyText(text: user.username),
-              foregroundColor: Theme.of(context).colorScheme.primary,              
+              foregroundColor: Theme.of(context).colorScheme.primary,
             ),
             body: SingleChildScrollView(
               padding: const EdgeInsets.symmetric(horizontal: 15.0),
@@ -212,16 +240,13 @@ class _ProfilePageState extends State<ProfilePage> {
                       ),
 
                       SizedBox(height: size.height * 0.05),
-                      BlocBuilder<PostCubit, PostState>(
-                        builder: (context, state) {
-                          if (state is PostLoading) {
-                            return const Center(
+                      // User posts grid - using local state instead of global PostCubit
+                      _isLoadingPosts
+                          ? const Center(
                               child: CircularProgressIndicator.adaptive(),
-                            );
-                          } else if (state is PostLoaded) {
-                            final posts = state.posts;
-                            return GridView.builder(
-                              itemCount: posts.length,
+                            )
+                          : GridView.builder(
+                              itemCount: _userPosts.length,
                               shrinkWrap: true,
                               physics: const NeverScrollableScrollPhysics(),
                               gridDelegate:
@@ -231,18 +256,11 @@ class _ProfilePageState extends State<ProfilePage> {
                                     mainAxisSpacing: 2,
                                   ),
                               itemBuilder: (context, index) {
-                                return ProfilePostWidget(post: posts[index]);
+                                return ProfilePostWidget(
+                                  post: _userPosts[index],
+                                );
                               },
-                            );
-                          } else if (state is PostError) {
-                            return Center(
-                              child: MyText(text: state.errorMessage),
-                            );
-                          } else {
-                            return const SizedBox.shrink();
-                          }
-                        },
-                      ),
+                            ),
                     ],
                   ),
                 ],
@@ -278,13 +296,16 @@ class _ProfilePageState extends State<ProfilePage> {
       child: ClipOval(
         child: profileImageBase64 != null && profileImageBase64.isNotEmpty
             ? (profileImageBase64.startsWith('http')
-                  ? CachedNetworkImage(
-                      imageUrl: profileImageBase64,
+                  ? Image.network(
+                      profileImageBase64,
                       fit: BoxFit.cover,
-                      placeholder: (context, url) => const Center(
-                        child: CircularProgressIndicator.adaptive(),
-                      ),
-                      errorWidget: (context, url, error) =>
+                      loadingBuilder: (context, child, loadingProgress) {
+                        if (loadingProgress == null) return child;
+                        return const Center(
+                          child: CircularProgressIndicator.adaptive(),
+                        );
+                      },
+                      errorBuilder: (context, error, stackTrace) =>
                           _buildProfileErrorIcon(size),
                     )
                   : Image.memory(

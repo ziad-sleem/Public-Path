@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:social_media_app_using_firebase/core/widgets/my_text.dart';
@@ -73,15 +72,29 @@ class _SearchPageState extends State<SearchPage> {
                                 user.profileImage != null &&
                                     user.profileImage!.isNotEmpty
                                 ? (user.profileImage!.startsWith('http')
-                                      ? CachedNetworkImage(
-                                          imageUrl: user.profileImage!,
+                                      ? Image.network(
+                                          user.profileImage!,
                                           fit: BoxFit.cover,
                                           width: 40,
                                           height: 40,
-                                          placeholder: (context, url) =>
-                                              const CircularProgressIndicator.adaptive(),
-                                          errorWidget: (context, url, error) =>
-                                              const Icon(Icons.person),
+                                          loadingBuilder:
+                                              (
+                                                context,
+                                                child,
+                                                loadingProgress,
+                                              ) {
+                                                if (loadingProgress == null)
+                                                  return child;
+                                                return const SizedBox(
+                                                  width: 40,
+                                                  height: 40,
+                                                  child:
+                                                      CircularProgressIndicator.adaptive(),
+                                                );
+                                              },
+                                          errorBuilder:
+                                              (context, error, stackTrace) =>
+                                                  const Icon(Icons.person),
                                         )
                                       : Image.memory(
                                           base64Decode(user.profileImage!),

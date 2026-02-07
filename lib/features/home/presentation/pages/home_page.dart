@@ -20,7 +20,7 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-
+    
     // fetch all the posts
     fetchAllPosts();
   }
@@ -57,11 +57,19 @@ class _HomePageState extends State<HomePage> {
                 );
               }
 
-              return ListView.builder(
-                itemCount: allPosts.length,
-                itemBuilder: (context, index) {
-                  return PostWidget(post: allPosts[index]);
-                },
+              return SingleChildScrollView(
+                child: Column(
+                  children: [
+                    ListView.builder(
+                      shrinkWrap: true,
+                      physics: NeverScrollableScrollPhysics(),
+                      itemCount: allPosts.length,
+                      itemBuilder: (context, index) {
+                        return PostWidget(post: allPosts[index]);
+                      },
+                    ),
+                  ],
+                ),
               );
             } else if (state is PostError) {
               return Center(child: MyText(text: state.errorMessage));

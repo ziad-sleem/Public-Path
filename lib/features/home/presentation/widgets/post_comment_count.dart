@@ -5,7 +5,11 @@ import 'package:social_media_app_using_firebase/features/post/domain/entities/po
 class PostCommentCount extends StatelessWidget {
   final Post post;
   final Function()? showCommentSheet;
-  const PostCommentCount({super.key, required this.post,required this.showCommentSheet});
+  const PostCommentCount({
+    super.key,
+    required this.post,
+    required this.showCommentSheet,
+  });
 
   @override
   Widget build(BuildContext context) {

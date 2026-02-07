@@ -8,5 +8,8 @@ abstract class PostRepo {
   Future<void> deletePost(String postId);
   Future<void> toggleLikePost({required String postId, required String userId});
   Future<void> addComment({required String postId, required Comment comment});
-  Future<void> deleteComment({required String postId, required Comment comment});
+  Future<void> deleteComment({
+    required String postId,
+    required Comment comment,
+  });
 }

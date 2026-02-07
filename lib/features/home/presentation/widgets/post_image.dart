@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:social_media_app_using_firebase/features/post/domain/entities/post.dart';
 
@@ -14,16 +13,22 @@ class PostImage extends StatelessWidget {
     }
 
     return post.imageUrl.startsWith('http')
-        ? CachedNetworkImage(
-            imageUrl: post.imageUrl,
+        ? Image.network(
+            post.imageUrl,
             fit: BoxFit.cover,
             width: double.infinity,
-            placeholder: (context, url) => Container(
-              height: 300,
-              color: Colors.grey[900],
-              child: const Center(child: CircularProgressIndicator.adaptive()),
-            ),
-            errorWidget: (context, url, error) => _buildErrorContainer(),
+            loadingBuilder: (context, child, loadingProgress) {
+              if (loadingProgress == null) return child;
+              return Container(
+                height: 300,
+                color: Colors.grey[900],
+                child: const Center(
+                  child: CircularProgressIndicator.adaptive(),
+                ),
+              );
+            },
+            errorBuilder: (context, error, stackTrace) =>
+                _buildErrorContainer(),
           )
         : Image.memory(
             base64Decode(post.imageUrl),
@@ -33,7 +38,6 @@ class PostImage extends StatelessWidget {
                 _buildErrorContainer(),
           );
   }
-  
 
   Widget _buildErrorContainer() {
     return Container(

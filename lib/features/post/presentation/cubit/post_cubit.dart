@@ -65,6 +65,19 @@ class PostCubit extends Cubit<PostState> {
     }
   }
 
+  // refresh posts silently without showing loading indicator
+  Future<void> refreshPosts() async {
+    try {
+      final posts = await postRepo.fectchAllPosts();
+      emit(PostLoaded(posts: posts));
+    } catch (e) {
+      // Silently fail - don't show error if we already have posts
+      if (state is! PostLoaded) {
+        emit(PostError(errorMessage: 'Failed to fetch post: ${e.toString()}'));
+      }
+    }
+  }
+
   // fetch all posts by user id
   Future<void> fetchAllPostsByUserId({required String userId}) async {
     try {
