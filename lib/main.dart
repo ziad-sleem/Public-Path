@@ -2,8 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:social_media_app_using_firebase/config/firebase_options.dart';
-import 'package:social_media_app_using_firebase/features/auth/data/firebase_auth_repo.dart';
-import 'package:social_media_app_using_firebase/features/auth/domain/repos/auth_repo.dart';
+import 'package:social_media_app_using_firebase/core/DI/injection.dart';
 import 'package:social_media_app_using_firebase/features/auth/peresnetation/cubits/cubit/auth_cubit.dart';
 import 'package:social_media_app_using_firebase/features/auth/peresnetation/cubits/cubit/auth_state.dart';
 import 'package:social_media_app_using_firebase/features/auth/peresnetation/pages/login_page.dart';
@@ -19,6 +18,9 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
+  // Initialize Dependency Injection
+  configureDependencies();
+
   runApp(const MyApp());
 }
 
@@ -29,16 +31,9 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider(
-          create: (context) {
-            final AuthRepo authRepo = FirebaseAuthRepo();
-            final cubit = AuthCubit(authRepo: authRepo);
-            cubit.checkAuth();
-            return cubit;
-          },
-        ),
-        BlocProvider(create: (context) => ProfileCubit()),
-        BlocProvider(create: (context) => PostCubit()),
+        BlocProvider(create: (context) => getIt<AuthCubit>()..checkAuth()),
+        BlocProvider(create: (context) => getIt<ProfileCubit>()),
+        BlocProvider(create: (context) => getIt<PostCubit>()..fetchAllPosts()),
       ],
       child: Builder(
         builder: (context) {

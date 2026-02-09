@@ -1,7 +1,9 @@
 import 'package:social_media_app_using_firebase/features/profile/domain/models/followers.dart';
 import 'package:social_media_app_using_firebase/features/profile/domain/models/following.dart';
+import 'package:social_media_app_using_firebase/features/profile/domain/models/profile_user.dart';
 
 abstract class ProfileRepo {
+  Future<ProfileUser> fetchUserData({required String uid});
   Future<void> updateUser({
     required String uid,
     String? username,

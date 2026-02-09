@@ -10,6 +10,7 @@ import 'package:social_media_app_using_firebase/features/profile/presentation/pa
 import 'package:social_media_app_using_firebase/core/services/image_picker_service.dart';
 import 'package:social_media_app_using_firebase/features/profile/presentation/pages/follower_page.dart';
 import 'package:social_media_app_using_firebase/features/profile/presentation/pages/following_page.dart';
+import 'package:social_media_app_using_firebase/core/DI/injection.dart';
 import 'package:social_media_app_using_firebase/features/profile/presentation/widgets/profile_post_widget.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -33,7 +34,7 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   void initState() {
     super.initState();
-    _localProfileCubit = ProfileCubit();
+    _localProfileCubit = getIt<ProfileCubit>();
 
     // load user profile data using local cubit
     _localProfileCubit.fetchUserProfile(widget.uid);

@@ -1,15 +1,20 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:injectable/injectable.dart';
 import 'package:social_media_app_using_firebase/features/auth/domain/entities/app_user.dart';
 import 'package:social_media_app_using_firebase/features/auth/domain/repos/auth_repo.dart';
 import 'package:social_media_app_using_firebase/features/profile/domain/models/profile_user.dart';
 
+
+@LazySingleton(as: AuthRepo)
 class FirebaseAuthRepo implements AuthRepo {
   // get the only instance or FirebaseAuth you can get and fill up the method by it
-  final FirebaseAuth firebaseAuth = FirebaseAuth.instance;
+  final FirebaseAuth firebaseAuth;
 
   // get the only instance or FirebaseFirestore you can get and fill up the method by it
-  final FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
+  final FirebaseFirestore firebaseFirestore ;
+
+  FirebaseAuthRepo({required this.firebaseAuth, required this.firebaseFirestore});
 
   // implement loginWithEmailAndPassword
   @override

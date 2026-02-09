@@ -1,19 +1,21 @@
 import 'dart:io';
-
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:injectable/injectable.dart';
 import 'package:social_media_app_using_firebase/core/services/cloudinary_service.dart';
 import 'package:social_media_app_using_firebase/features/post/domain/entities/comment.dart';
 import 'package:social_media_app_using_firebase/features/post/domain/entities/post.dart';
 import 'package:social_media_app_using_firebase/features/post/domain/repo/post_repo.dart';
-import 'package:social_media_app_using_firebase/features/post/data/firebase_post_repo.dart';
 
 part 'post_state.dart';
 
+@injectable
 class PostCubit extends Cubit<PostState> {
-  final PostRepo postRepo = FirebasePostRepo();
-  final CloudinaryService _cloudinaryService = CloudinaryService();
-  PostCubit() : super(PostInitial());
+  final PostRepo postRepo;
+  final CloudinaryService cloudinaryService;
+
+  PostCubit({required this.postRepo, required this.cloudinaryService})
+    : super(PostInitial());
 
   // create new post
   Future<void> createPost(Post post, {File? image}) async {
@@ -24,7 +26,7 @@ class PostCubit extends Cubit<PostState> {
       String imageUrl = post.imageUrl;
       // Upload to Cloudinary if image is provided
       if (image != null) {
-        final uploadedUrl = await _cloudinaryService.uploadImage(image);
+        final uploadedUrl = await cloudinaryService.uploadImage(image);
         if (uploadedUrl != null) {
           imageUrl = uploadedUrl;
         } else {
