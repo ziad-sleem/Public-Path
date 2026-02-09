@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:injectable/injectable.dart';
 import 'package:social_media_app_using_firebase/features/search/domain/repos/search_repo.dart';
 import 'package:social_media_app_using_firebase/features/search/presentation/bloc/search_event.dart';
 import 'package:social_media_app_using_firebase/features/search/presentation/bloc/search_state.dart';
@@ -6,6 +7,7 @@ import 'package:social_media_app_using_firebase/features/search/presentation/blo
 export 'package:social_media_app_using_firebase/features/search/presentation/bloc/search_event.dart';
 export 'package:social_media_app_using_firebase/features/search/presentation/bloc/search_state.dart';
 
+@injectable
 class SearchBloc extends Bloc<SearchEvent, SearchState> {
   final SearchRepo searchRepo;
 

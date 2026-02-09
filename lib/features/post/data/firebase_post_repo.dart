@@ -1,47 +1,55 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:social_media_app_using_firebase/features/auth/data/firebase_auth_repo.dart';
+import 'package:injectable/injectable.dart';
+import 'package:social_media_app_using_firebase/features/auth/domain/repos/auth_repo.dart';
 import 'package:social_media_app_using_firebase/features/post/domain/entities/comment.dart';
 import 'package:social_media_app_using_firebase/features/post/domain/entities/post.dart';
 import 'package:social_media_app_using_firebase/features/post/domain/repo/post_repo.dart';
-import 'package:social_media_app_using_firebase/features/profile/data/firebase_profile_repo.dart';
+import 'package:social_media_app_using_firebase/features/profile/domain/repos/profile_repo.dart';
 
+@LazySingleton(as: PostRepo)
 class FirebasePostRepo implements PostRepo {
-  final FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
-  final CollectionReference postCollection = FirebaseFirestore.instance
-      .collection('posts');
+  final FirebaseFirestore firebaseFirestore;
 
-  final FirebaseProfileRepo firebaseProfileRepo = FirebaseProfileRepo();
-  final FirebaseAuthRepo firebaseAuthRepo = FirebaseAuthRepo();
+  // Use interfaces instead of concrete classes for better decoupling
+  final ProfileRepo profileRepo;
+  final AuthRepo authRepo;
+
+  FirebasePostRepo({
+    required this.firebaseFirestore,
+    required this.profileRepo,
+    required this.authRepo,
+  });
+
+  // Helper for collection reference
+  CollectionReference get postCollection =>
+      firebaseFirestore.collection('posts');
 
   @override
   Future<List<Post>> fectchAllPosts() async {
     try {
-      // get all the posts ordered by the time
       final postsSnapshot = await postCollection
           .orderBy('timeStamp', descending: true)
           .get();
-      // convert the list into list of post
+
       final List<Post> allPosts = postsSnapshot.docs
           .map((doc) => Post.fromMap(doc.data() as Map<String, dynamic>))
           .toList();
 
-      // filter the posts to get only the posts of the users I follow
-      final currentUser = await firebaseAuthRepo.getCurrentUser();
+      final currentUser = await authRepo.getCurrentUser();
 
       if (currentUser == null) {
         return [];
       }
 
-      final followings = await firebaseProfileRepo.fetchFollowings(
+      final followings = await profileRepo.fetchFollowings(
         uid: currentUser.uid,
       );
 
       final List<Post> followingPosts = allPosts.where((post) {
         return post.userId == currentUser.uid ||
-            followings!.following.contains(post.userId);
+            (followings?.following.contains(post.userId) ?? false);
       }).toList();
 
-      // return the list
       return followingPosts;
     } catch (e) {
       throw Exception("Error fetching posts: ${e.toString()}");
@@ -89,23 +97,18 @@ class FirebasePostRepo implements PostRepo {
     required String userId,
   }) async {
     try {
-      // get the post document form firestore
       final postDoc = await postCollection.doc(postId).get();
 
       if (postDoc.exists) {
         final post = Post.fromMap(postDoc.data() as Map<String, dynamic>);
-
-        // chech if user has already like this post
         final hasLiked = post.likes.contains(userId);
 
-        // update the like list
         if (hasLiked) {
           post.likes.remove(userId);
         } else {
           post.likes.add(userId);
         }
 
-        // update the post in firestore
         await postCollection.doc(postId).update(post.toMap());
       } else {
         throw Exception("Post Not Found");

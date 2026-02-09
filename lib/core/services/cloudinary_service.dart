@@ -2,6 +2,9 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http;
 
+import 'package:injectable/injectable.dart';
+
+@lazySingleton
 class CloudinaryService {
   final String cloudName = "dd15ci6zb";
   final String uploadPreset = "ml_default";

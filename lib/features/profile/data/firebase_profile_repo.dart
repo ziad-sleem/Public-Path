@@ -1,11 +1,15 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:injectable/injectable.dart';
 import 'package:social_media_app_using_firebase/features/profile/domain/models/followers.dart';
 import 'package:social_media_app_using_firebase/features/profile/domain/models/following.dart';
 import 'package:social_media_app_using_firebase/features/profile/domain/models/profile_user.dart';
 import 'package:social_media_app_using_firebase/features/profile/domain/repos/profile_repo.dart';
 
+@LazySingleton(as: ProfileRepo)
 class FirebaseProfileRepo implements ProfileRepo {
-  final FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
+  final FirebaseFirestore firebaseFirestore;
+
+  FirebaseProfileRepo({required this.firebaseFirestore});
 
   /// fetch user data for profile
   @override
