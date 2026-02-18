@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:social_media_app_using_firebase/core/widgets/my_text.dart';
+import 'package:social_media_app_using_firebase/core/widgets/app_text.dart';
 import 'package:social_media_app_using_firebase/features/home/presentation/widgets/my_home_app_bar.dart';
 import 'package:social_media_app_using_firebase/features/home/presentation/widgets/post_widget.dart';
 import 'package:social_media_app_using_firebase/features/post/presentation/cubit/post_cubit.dart';

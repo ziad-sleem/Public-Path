@@ -2,9 +2,8 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:social_media_app_using_firebase/core/widgets/my_button.dart';
-import 'package:social_media_app_using_firebase/core/widgets/my_text.dart';
-
+import 'package:social_media_app_using_firebase/core/widgets/app_button.dart';
+import 'package:social_media_app_using_firebase/core/widgets/app_text.dart';
 import 'package:social_media_app_using_firebase/features/auth/domain/entities/app_user.dart';
 import 'package:social_media_app_using_firebase/features/auth/peresnetation/cubits/cubit/auth_cubit.dart';
 import 'package:social_media_app_using_firebase/features/post/domain/entities/post.dart';
@@ -15,7 +14,8 @@ import 'package:social_media_app_using_firebase/features/post/presentation/widge
 import 'package:social_media_app_using_firebase/features/post/presentation/widgets/location_tag_list_tile.dart';
 
 class UploadPostPage extends StatefulWidget {
-  const UploadPostPage({super.key});
+  final VoidCallback? onPostSuccess;
+  const UploadPostPage({super.key, this.onPostSuccess});
 
   @override
   State<UploadPostPage> createState() => _UploadPostPageState();
@@ -30,6 +30,7 @@ class _UploadPostPageState extends State<UploadPostPage> {
 
   // current user
   AppUser? currentUser;
+  bool _isUploadingPost = false;
 
   @override
   void initState() {
@@ -110,10 +111,25 @@ class _UploadPostPageState extends State<UploadPostPage> {
 
     return BlocConsumer<PostCubit, PostState>(
       listener: (context, state) {
-        if (state is PostLoaded) {
-          Navigator.pop(context);
+        if (state is PostUpLoading) {
+          setState(() {
+            _isUploadingPost = true;
+          });
+        } else if (state is PostLoaded) {
+          if (_isUploadingPost) {
+            setState(() {
+              _isUploadingPost = false;
+              imagePickedFile = null;
+              textController.clear();
+            });
+            widget.onPostSuccess?.call();
+          }
         } else if (state is PostError) {
-          print("📍📍📍📍📍📍📍📍📍📍📍${state.errorMessage}");
+          if (_isUploadingPost) {
+            setState(() {
+              _isUploadingPost = false;
+            });
+          }
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: MyText(text: state.errorMessage),
@@ -186,7 +202,7 @@ class _UploadPostPageState extends State<UploadPostPage> {
           SizedBox(
             width: size.width * 0.5,
 
-            child: MyButton(text: "Select from Gallery", onTap: pickImage),
+            child: AppButton(text: "Select from Gallery", onTap: pickImage),
           ),
         ],
       ),

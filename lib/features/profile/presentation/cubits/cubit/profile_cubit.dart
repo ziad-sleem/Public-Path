@@ -43,6 +43,7 @@ class ProfileCubit extends Cubit<ProfileState> {
     String? username,
     String? bio,
     String? profileImage,
+    String? phoneNumber,
   }) async {
     try {
       emit(ProfileLoading());
@@ -53,6 +54,7 @@ class ProfileCubit extends Cubit<ProfileState> {
         bio: bio,
         profileImage: profileImage,
         username: username,
+        phoneNumber: phoneNumber,
       );
 
       // re-fetch updated user from Firestore

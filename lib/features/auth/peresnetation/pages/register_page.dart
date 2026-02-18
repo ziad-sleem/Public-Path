@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:social_media_app_using_firebase/core/widgets/my_button.dart';
+import 'package:social_media_app_using_firebase/core/enums/field_type.dart';
+import 'package:social_media_app_using_firebase/core/widgets/app_button.dart';
 import 'package:social_media_app_using_firebase/features/auth/peresnetation/cubits/cubit/auth_cubit.dart';
-import 'package:social_media_app_using_firebase/features/auth/peresnetation/pages/login_page.dart';
-
-import 'package:social_media_app_using_firebase/core/widgets/my_text.dart';
-import 'package:social_media_app_using_firebase/core/widgets/my_text_field.dart';
+import 'package:social_media_app_using_firebase/core/widgets/app_text.dart';
 import 'package:social_media_app_using_firebase/features/auth/peresnetation/widgets/auth_page_banar.dart';
+import 'package:social_media_app_using_firebase/features/auth/peresnetation/widgets/field_widget.dart';
+import 'package:social_media_app_using_firebase/features/auth/peresnetation/widgets/google_signin_button.dart';
+import 'package:social_media_app_using_firebase/features/auth/peresnetation/widgets/or_divider.dart';
+import 'package:social_media_app_using_firebase/features/auth/peresnetation/cubits/cubit/auth_state.dart';
 
 class RegisterPage extends StatefulWidget {
-  const RegisterPage({super.key});
+  final void Function()? togglePages;
+  const RegisterPage({super.key, this.togglePages});
 
   @override
   State<RegisterPage> createState() => _RegisterPageState();
@@ -20,6 +23,8 @@ class _RegisterPageState extends State<RegisterPage> {
 
   TextEditingController userNameController = TextEditingController();
 
+  TextEditingController phoneNumberController = TextEditingController();
+
   TextEditingController passwordController = TextEditingController();
 
   final _formKey = GlobalKey<FormState>();
@@ -29,6 +34,7 @@ class _RegisterPageState extends State<RegisterPage> {
     emailController.dispose();
     userNameController.dispose();
     passwordController.dispose();
+    phoneNumberController.dispose();
     super.dispose();
   }
 
@@ -40,14 +46,14 @@ class _RegisterPageState extends State<RegisterPage> {
       final String name = userNameController.text;
       final String email = emailController.text;
       final String password = passwordController.text;
+      final String phoneNumber = phoneNumberController.text;
 
-      // auth cubit
       final authCubit = context.read<AuthCubit>();
 
       // check if not empty
       if (name.isNotEmpty && email.isNotEmpty && password.isNotEmpty) {
         // sign up
-        authCubit.register(name, email, password);
+        authCubit.register(name, email, password, phoneNumber);
       }
       // fields are empty => display error
       else {
@@ -59,8 +65,9 @@ class _RegisterPageState extends State<RegisterPage> {
 
     final colorScheme = Theme.of(context).colorScheme;
     final size = MediaQuery.of(context).size;
+
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.background,
+      backgroundColor: colorScheme.surface,
       body: SingleChildScrollView(
         child: Center(
           child: Form(
@@ -75,59 +82,61 @@ class _RegisterPageState extends State<RegisterPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   AuthPageBanar(authType: ''),
-                  // email
-                  MyText(text: "Name", fontSize: 20),
                   SizedBox(height: size.height * 0.01),
 
-                  MyTextFormField(
+                  // name
+                  FieldWidget(
                     controller: userNameController,
-                    hintText: 'NAME',
-                    emailOrPasswordOrUserOrBioOrName: 'user',
+                    fieldType: FieldType.name,
                   ),
-                  SizedBox(height: size.height * 0.02),
-                  // email
-                  MyText(text: "EMAIL", fontSize: 20),
-                  SizedBox(height: size.height * 0.01),
 
-                  MyTextFormField(
+                  // email
+                  FieldWidget(
                     controller: emailController,
-                    hintText: 'EMAIL',
-                    emailOrPasswordOrUserOrBioOrName: 'email',
+                    fieldType: FieldType.email,
                   ),
-                  SizedBox(height: size.height * 0.02),
+
+                  // phone Number
+                  FieldWidget(
+                    controller: phoneNumberController,
+                    fieldType: FieldType.phoneNumber,
+                  ),
 
                   // password
-                  MyText(text: "PASSWORD", fontSize: 20),
-                  SizedBox(height: size.height * 0.01),
-
-                  MyTextFormField(
+                  FieldWidget(
                     controller: passwordController,
-                    hintText: "PASSWORD",
-                    emailOrPasswordOrUserOrBioOrName: 'password',
+                    fieldType: FieldType.password,
                   ),
-                  SizedBox(height: size.height * 0.05),
-                  TextButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => LoginPage()),
-                      );
-                    },
 
-                    child: MyText(
-                      text: "Already have an account, login here",
-                      color: colorScheme.inversePrimary,
-                    ),
-                  ),
                   SizedBox(height: size.height * 0.02),
 
-                  MyButton(
+                  // sign up
+                  AppButton(
                     text: "SIGN UP",
+                    isLoading: context.watch<AuthCubit>().state is AuthLoading,
                     onTap: () {
                       if (_formKey.currentState!.validate()) {
                         signUp();
                       }
                     },
+                  ),
+
+                  // OR divider
+                  OrDivider(),
+
+                  // Google Sign-In button
+                  GoogleSigninButton(),
+                  SizedBox(height: size.height * 0.02),
+
+                  // toggle page
+                  Center(
+                    child: TextButton(
+                      onPressed: widget.togglePages,
+                      child: MyText(
+                        text: "Already have an account, login here",
+                        color: colorScheme.inversePrimary,
+                      ),
+                    ),
                   ),
                 ],
               ),

@@ -2,12 +2,13 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:social_media_app_using_firebase/core/theme/colors.dart';
-import 'package:social_media_app_using_firebase/core/widgets/my_text.dart';
+import 'package:social_media_app_using_firebase/core/widgets/app_text.dart';
 import 'package:social_media_app_using_firebase/features/auth/peresnetation/cubits/cubit/auth_cubit.dart';
 import 'package:social_media_app_using_firebase/features/post/domain/entities/comment.dart';
 import 'package:social_media_app_using_firebase/features/post/domain/entities/post.dart';
 import 'package:social_media_app_using_firebase/features/post/presentation/cubit/post_cubit.dart';
 import 'package:social_media_app_using_firebase/features/profile/presentation/cubits/cubit/profile_cubit.dart';
+import 'package:social_media_app_using_firebase/features/profile/presentation/pages/profile_page.dart';
 
 class CommentSheet extends StatefulWidget {
   final Post post;
@@ -239,17 +240,34 @@ class _CommentSheetState extends State<CommentSheet> {
                           child: Row(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              _CommentUserAvatar(userId: comment.userId),
+                              // comment avatrar
+                              GestureDetector(
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          ProfilePage(uid: comment.userId),
+                                    ),
+                                  );
+                                },
+                                child: _CommentUserAvatar(
+                                  userId: comment.userId,
+                                ),
+                              ),
                               const SizedBox(width: 12),
                               Expanded(
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
+                                    // connent user name
                                     MyText(
                                       text: comment.userName,
                                       fontSize: 14,
                                       fontWeight: FontWeight.bold,
                                     ),
+
+                                    // comment
                                     MyText(text: comment.text, fontSize: 14),
                                     const SizedBox(height: 4),
                                     MyText(

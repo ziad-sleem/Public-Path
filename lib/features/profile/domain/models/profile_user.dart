@@ -13,6 +13,7 @@ class ProfileUser extends AppUser {
     super.profileImage,
     super.followersCount,
     super.followingCount,
+    required super.phoneNumber,
   });
 
   factory ProfileUser.fromMap(Map<String, dynamic> json) {
@@ -25,14 +26,15 @@ class ProfileUser extends AppUser {
       profileImage: json['profileImage'],
       followersCount: json['followersCount'] ?? 0,
       followingCount: json['followingCount'] ?? 0,
+      phoneNumber: json['phoneNumber']?.toString() ?? '',
     );
   }
 
-  @override
   ProfileUser copyWith({
     String? username,
     String? bio,
     String? profileImage,
+    String? phoneNumber,
     int? followersCount,
     int? followingCount,
     bool? isVerified,
@@ -47,10 +49,10 @@ class ProfileUser extends AppUser {
       followersCount: followersCount ?? this.followersCount,
       followingCount: followingCount ?? this.followingCount,
       profileImageUrl: profileImageUrl ?? this.profileImageUrl,
+      phoneNumber: phoneNumber ?? this.phoneNumber,
     );
   }
 
-  @override
   Map<String, dynamic> toMap() {
     return {
       'bio': bio,
@@ -61,6 +63,7 @@ class ProfileUser extends AppUser {
       'profileImage': profileImage,
       'followersCount': followersCount,
       'followingCount': followingCount,
+      'phoneNumber': phoneNumber,
     };
   }
 }

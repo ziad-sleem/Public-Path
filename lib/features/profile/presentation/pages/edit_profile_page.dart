@@ -1,12 +1,13 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:social_media_app_using_firebase/core/widgets/my_button.dart';
-import 'package:social_media_app_using_firebase/core/widgets/my_text.dart';
+import 'package:social_media_app_using_firebase/config/cloudinary/image_picker_service.dart';
+import 'package:social_media_app_using_firebase/core/enums/field_type.dart';
+import 'package:social_media_app_using_firebase/core/widgets/app_button.dart';
+import 'package:social_media_app_using_firebase/core/widgets/app_text.dart';
 import 'package:social_media_app_using_firebase/features/profile/domain/models/profile_user.dart';
 import 'package:social_media_app_using_firebase/features/profile/presentation/cubits/cubit/profile_cubit.dart';
-import 'package:social_media_app_using_firebase/core/widgets/my_text_field.dart';
-import 'package:social_media_app_using_firebase/core/services/image_picker_service.dart';
+import 'package:social_media_app_using_firebase/core/widgets/app_text_field.dart';
 
 class EditProfilePage extends StatefulWidget {
   final ProfileUser user;
@@ -19,6 +20,7 @@ class EditProfilePage extends StatefulWidget {
 class _EditProfilePageState extends State<EditProfilePage> {
   final TextEditingController bioController = TextEditingController();
   final TextEditingController nameController = TextEditingController();
+  final TextEditingController phoneController = TextEditingController();
   final _formkey = GlobalKey<FormState>();
   final ImagePickerService _imagePickerService = ImagePickerService();
   File? _selectedImage;
@@ -30,6 +32,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
     // pre-fill bio with current user's bio
     bioController.text = widget.user.bio ?? '';
     nameController.text = widget.user.username;
+    phoneController.text = widget.user.phoneNumber;
   }
 
   // Show image source selection dialog
@@ -123,6 +126,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
     final String bio = bioController.text.trim();
     final String userName = nameController.text.trim();
+    final String phoneNumber = phoneController.text.trim();
     // profile cubit
     final profileCubit = context.read<ProfileCubit>();
 
@@ -130,6 +134,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
       uid: widget.user.uid,
       bio: bio.isNotEmpty ? bio : null,
       username: userName,
+      phoneNumber: phoneNumber,
       // Only update profile image if a new image was selected
       profileImage: _selectedImageBase64,
     );
@@ -251,7 +256,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                     SizedBox(
                       width: size.width * 0.5,
 
-                      child: MyButton(
+                      child: AppButton(
                         text: "Select Image",
                         onTap: _showImageSourceDialog,
                       ),
@@ -270,10 +275,23 @@ class _EditProfilePageState extends State<EditProfilePage> {
               ),
               SizedBox(height: size.height * 0.02),
 
-              MyTextFormField(
+              AppTextField(
                 controller: nameController,
-                hintText: "EDIT Name",
-                emailOrPasswordOrUserOrBioOrName: 'editBio',
+                fieldType: FieldType.name,
+              ),
+              SizedBox(height: size.height * 0.05),
+
+              // edit Phone
+              MyText(
+                text: 'Edit Phone Number',
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+              ),
+              SizedBox(height: size.height * 0.02),
+
+              AppTextField(
+                controller: phoneController,
+                fieldType: FieldType.phoneNumber,
               ),
               SizedBox(height: size.height * 0.05),
 
@@ -285,17 +303,13 @@ class _EditProfilePageState extends State<EditProfilePage> {
               ),
               SizedBox(height: size.height * 0.02),
 
-              MyTextFormField(
-                controller: bioController,
-                hintText: "EDIT BIO",
-                emailOrPasswordOrUserOrBioOrName: 'editBio',
-              ),
+              AppTextField(controller: bioController, fieldType: FieldType.bio),
               SizedBox(height: size.height * 0.05),
               // Save button
               Center(
                 child: SizedBox(
                   width: size.width * 0.5,
-                  child: MyButton(text: "Save Changes", onTap: updateProfile),
+                  child: AppButton(text: "Save Changes", onTap: updateProfile),
                 ),
               ),
               SizedBox(height: size.height * 0.02),

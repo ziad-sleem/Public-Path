@@ -9,6 +9,7 @@ abstract class ProfileRepo {
     String? username,
     String? bio,
     String? profileImage,
+    String? phoneNumber,
   });
 
   // following proccess

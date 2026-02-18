@@ -2,17 +2,18 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:social_media_app_using_firebase/config/firebase_options.dart';
-import 'package:social_media_app_using_firebase/core/DI/injection.dart';
+import 'package:social_media_app_using_firebase/config/DI/injection.dart';
 import 'package:social_media_app_using_firebase/features/auth/peresnetation/cubits/cubit/auth_cubit.dart';
 import 'package:social_media_app_using_firebase/features/auth/peresnetation/cubits/cubit/auth_state.dart';
-import 'package:social_media_app_using_firebase/features/auth/peresnetation/pages/login_page.dart';
+import 'package:social_media_app_using_firebase/features/auth/peresnetation/pages/auth_page.dart';
+import 'package:social_media_app_using_firebase/features/auth/peresnetation/pages/otp_page.dart';
 import 'package:social_media_app_using_firebase/features/auth/peresnetation/pages/splash_page.dart';
 import 'package:social_media_app_using_firebase/features/home/presentation/pages/main_page.dart';
 import 'package:social_media_app_using_firebase/features/post/presentation/cubit/post_cubit.dart';
 import 'package:social_media_app_using_firebase/features/profile/presentation/cubits/cubit/profile_cubit.dart';
 import 'package:social_media_app_using_firebase/core/theme/dark_mode.dart';
 import 'package:social_media_app_using_firebase/core/theme/light_mode.dart';
-import 'package:social_media_app_using_firebase/core/widgets/my_text.dart';
+import 'package:social_media_app_using_firebase/core/widgets/app_text.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -43,11 +44,12 @@ class MyApp extends StatelessWidget {
             darkTheme: darkMode,
             home: BlocConsumer<AuthCubit, AuthState>(
               builder: (context, state) {
-                print("App Auth State: $state");
                 if (state is Authenticated) {
                   return const MainPage();
                 } else if (state is Unauthenticated) {
-                  return const LoginPage();
+                  return const AuthPage();
+                } else if (state is AuthRegistrationSuccess) {
+                  return OtpScreenProvider(phoneNumber: state.phoneNumber);
                 } else {
                   return const SplashPage();
                 }
@@ -64,6 +66,16 @@ class MyApp extends StatelessWidget {
                     SnackBar(
                       backgroundColor: Colors.red,
                       content: MyText(text: state.errorMessage),
+                    ),
+                  );
+                }
+                if (state is AuthPasswordResetEmailSent) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      backgroundColor: Colors.green,
+                      content: MyText(
+                        text: "Password reset link sent! Check your email.",
+                      ),
                     ),
                   );
                 }

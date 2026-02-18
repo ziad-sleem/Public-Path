@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:social_media_app_using_firebase/core/widgets/my_text.dart';
+import 'package:social_media_app_using_firebase/core/widgets/app_text.dart';
 import 'package:social_media_app_using_firebase/features/auth/domain/entities/app_user.dart';
 import 'package:social_media_app_using_firebase/features/auth/peresnetation/cubits/cubit/auth_cubit.dart';
 import 'package:social_media_app_using_firebase/features/home/presentation/widgets/post_actions.dart';
@@ -167,16 +167,15 @@ class _PostWidgetState extends State<PostWidget> {
 
           // Comment count
           if (widget.post.comments.isNotEmpty)
-            PostCommentCount(post: widget.post, showCommentSheet: showCommentSheet),
+            PostCommentCount(
+              post: widget.post,
+              showCommentSheet: showCommentSheet,
+            ),
 
           // Timestamp
-          PostTimeStamp(post: widget.post)
-        
+          PostTimeStamp(post: widget.post),
         ],
       ),
     );
   }
-
- 
-
 }

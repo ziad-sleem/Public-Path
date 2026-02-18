@@ -1,14 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:social_media_app_using_firebase/core/widgets/my_button.dart';
+import 'package:social_media_app_using_firebase/core/enums/field_type.dart';
+import 'package:social_media_app_using_firebase/core/widgets/app_button.dart';
 import 'package:social_media_app_using_firebase/features/auth/peresnetation/cubits/cubit/auth_cubit.dart';
-import 'package:social_media_app_using_firebase/features/auth/peresnetation/pages/register_page.dart';
-import 'package:social_media_app_using_firebase/core/widgets/my_text.dart';
-import 'package:social_media_app_using_firebase/core/widgets/my_text_field.dart';
+import 'package:social_media_app_using_firebase/core/widgets/app_text.dart';
 import 'package:social_media_app_using_firebase/features/auth/peresnetation/widgets/auth_page_banar.dart';
+import 'package:social_media_app_using_firebase/features/auth/peresnetation/widgets/field_widget.dart';
+import 'package:social_media_app_using_firebase/features/auth/peresnetation/widgets/google_signin_button.dart';
+import 'package:social_media_app_using_firebase/features/auth/peresnetation/widgets/or_divider.dart';
+import 'package:social_media_app_using_firebase/features/auth/peresnetation/widgets/forget_password_widget.dart';
+import 'package:social_media_app_using_firebase/features/auth/peresnetation/cubits/cubit/auth_state.dart';
 
 class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+  final void Function()? togglePages;
+  const LoginPage({super.key, this.togglePages});
 
   @override
   State<LoginPage> createState() => _LoginPageState();
@@ -48,8 +53,9 @@ class _LoginPageState extends State<LoginPage> {
 
     final colorScheme = Theme.of(context).colorScheme;
     final size = MediaQuery.of(context).size;
+
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.background,
+      backgroundColor: colorScheme.surface,
       body: SingleChildScrollView(
         child: Center(
           child: Form(
@@ -63,59 +69,57 @@ class _LoginPageState extends State<LoginPage> {
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                AuthPageBanar(authType: 'login'),
-                  // email
-                  MyText(text: "EMAIL", fontSize: 20),
-                  SizedBox(height: size.height * 0.01),
+                  AuthPageBanar(authType: 'login'),
+                  SizedBox(height: size.height * 0.14),
 
-                  MyTextFormField(
+                  // email
+                  FieldWidget(
                     controller: emailController,
-                    hintText: 'EMAIL',
-                    emailOrPasswordOrUserOrBioOrName: 'email',
+                    fieldType: FieldType.email,
                   ),
+
                   SizedBox(height: size.height * 0.02),
 
                   // password
-                  MyText(text: "PASSWORD", fontSize: 20),
-                  SizedBox(height: size.height * 0.01),
-
-                  MyTextFormField(
+                  FieldWidget(
                     controller: passwordController,
-                    hintText: "PASSWORD",
-                    emailOrPasswordOrUserOrBioOrName: 'password',
+                    fieldType: FieldType.password,
                   ),
-                  SizedBox(height: size.height * 0.01),
-                  Align(
-                    alignment: Alignment.bottomRight,
-                    child: TextButton(
-                      onPressed: null,
-                      child: MyText(text: 'Forget password'),
-                    ),
-                  ),
-                  SizedBox(height: size.height * 0.07),
 
-                  TextButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => RegisterPage()),
-                      );
-                    },
-                    child: MyText(
-                      text: 'Don\'t have an account? Register.',
-                      color: colorScheme.inversePrimary,
-                    ),
-                  ),
+                  SizedBox(height: size.height * 0.01),
+
+                  // forget password
+                  ForgetPasswordWidget(emailController: emailController),
                   SizedBox(height: size.height * 0.02),
 
-                  MyButton(
+                  AppButton(
                     text: "LOGIN",
+                    isLoading: context.watch<AuthCubit>().state is AuthLoading,
                     onTap: () {
                       if (_formKey.currentState!.validate()) {
                         // If the form is valid, proceed to login
                         login();
                       }
                     },
+                  ),
+                  SizedBox(height: size.height * 0.02),
+
+                  // OR divider
+                  OrDivider(),
+
+                  // Google Sign-In button
+                  GoogleSigninButton(),
+                  SizedBox(height: size.height * 0.02),
+
+                  // toggle page
+                  Center(
+                    child: TextButton(
+                      onPressed: widget.togglePages,
+                      child: MyText(
+                        text: 'Don\'t have an account? Register.',
+                        color: colorScheme.inversePrimary,
+                      ),
+                    ),
                   ),
                 ],
               ),
