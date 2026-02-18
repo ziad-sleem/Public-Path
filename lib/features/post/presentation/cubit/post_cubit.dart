@@ -2,7 +2,7 @@ import 'dart:io';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
-import 'package:social_media_app_using_firebase/core/services/cloudinary_service.dart';
+import 'package:social_media_app_using_firebase/config/cloudinary/cloudinary_service.dart';
 import 'package:social_media_app_using_firebase/features/post/domain/entities/comment.dart';
 import 'package:social_media_app_using_firebase/features/post/domain/entities/post.dart';
 import 'package:social_media_app_using_firebase/features/post/domain/repo/post_repo.dart';

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:social_media_app_using_firebase/core/widgets/my_text.dart';
+import 'package:social_media_app_using_firebase/core/widgets/app_text.dart';
 
 class AuthPageBanar extends StatelessWidget {
   final String authType;
@@ -11,16 +11,17 @@ class AuthPageBanar extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        SizedBox(height: size.height * 0.02),
-        Center(
-          child: MyText(
-            text: "Public Path",
-            fontSize: 40,
-            fontWeight: FontWeight.bold,
-            color: Theme.of(context).colorScheme.primary,
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 12.0),
+          child: Center(
+            child: MyText(
+              text: "Public Path",
+              fontSize: 40,
+              fontWeight: FontWeight.bold,
+              color: Theme.of(context).colorScheme.primary,
+            ),
           ),
         ),
-        SizedBox(height: size.height * 0.07),
 
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -37,7 +38,6 @@ class AuthPageBanar extends StatelessWidget {
             ),
           ],
         ),
-        SizedBox(height: size.height * 0.15),
       ],
     );
   }

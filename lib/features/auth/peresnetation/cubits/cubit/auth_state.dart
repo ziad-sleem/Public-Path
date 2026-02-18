@@ -12,7 +12,14 @@ class Authenticated extends AuthState {
   Authenticated({required this.user});
 }
 
+class AuthRegistrationSuccess extends AuthState {
+  final String phoneNumber;
+  AuthRegistrationSuccess({required this.phoneNumber});
+}
+
 class Unauthenticated extends AuthState {}
+
+class AuthPasswordResetEmailSent extends AuthState {}
 
 class AuthError extends AuthState {
   final String errorMessage;

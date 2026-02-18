@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:social_media_app_using_firebase/core/widgets/my_text.dart';
+import 'package:social_media_app_using_firebase/core/widgets/app_text.dart';
 
 class SplashPage extends StatelessWidget {
   const SplashPage({super.key});

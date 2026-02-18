@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:social_media_app_using_firebase/core/widgets/my_button.dart';
-import 'package:social_media_app_using_firebase/core/widgets/my_text.dart';
+import 'package:social_media_app_using_firebase/config/cloudinary/image_picker_service.dart';
+import 'package:social_media_app_using_firebase/core/widgets/app_button.dart';
+import 'package:social_media_app_using_firebase/core/widgets/app_text.dart';
 import 'package:social_media_app_using_firebase/features/auth/peresnetation/cubits/cubit/auth_cubit.dart';
 import 'package:social_media_app_using_firebase/features/post/presentation/cubit/post_cubit.dart';
 import 'package:social_media_app_using_firebase/features/post/domain/entities/post.dart';
 import 'package:social_media_app_using_firebase/features/profile/presentation/cubits/cubit/profile_cubit.dart';
 import 'package:social_media_app_using_firebase/features/profile/presentation/pages/edit_profile_page.dart';
-import 'package:social_media_app_using_firebase/core/services/image_picker_service.dart';
 import 'package:social_media_app_using_firebase/features/profile/presentation/pages/follower_page.dart';
 import 'package:social_media_app_using_firebase/features/profile/presentation/pages/following_page.dart';
-import 'package:social_media_app_using_firebase/core/DI/injection.dart';
+import 'package:social_media_app_using_firebase/config/DI/injection.dart';
 import 'package:social_media_app_using_firebase/features/profile/presentation/widgets/profile_post_widget.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -239,22 +239,26 @@ class _ProfilePageState extends State<ProfilePage> {
                                   widget.uid
                               ? SizedBox(
                                   width: size.width * 0.45,
-                                  child: MyButton(
+                                  child: AppButton(
                                     text: 'Edit Profile',
-                                    onTap: () {
-                                      Navigator.push(
+                                    onTap: () async {
+                                      await Navigator.push(
                                         context,
                                         MaterialPageRoute(
                                           builder: (context) =>
                                               EditProfilePage(user: user),
                                         ),
                                       );
+                                      // Re-fetch profile after returning from edit page
+                                      _localProfileCubit.fetchUserProfile(
+                                        widget.uid,
+                                      );
                                     },
                                   ),
                                 )
                               : SizedBox(
                                   width: size.width * 0.45,
-                                  child: MyButton(
+                                  child: AppButton(
                                     onTap: toggleFollow,
                                     text: isFollowing ? "Unfollow" : "Follow",
                                   ),
@@ -264,7 +268,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           SizedBox(
                             width: size.width * 0.45,
 
-                            child: MyButton(
+                            child: AppButton(
                               text: 'Share Profile',
                               onTap: () => Navigator.pop(context),
                             ),

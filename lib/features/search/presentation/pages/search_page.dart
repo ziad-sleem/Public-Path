@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:social_media_app_using_firebase/core/widgets/my_text.dart';
+import 'package:social_media_app_using_firebase/core/widgets/app_text.dart';
 import 'package:social_media_app_using_firebase/features/profile/presentation/pages/profile_page.dart';
 import 'package:social_media_app_using_firebase/features/search/presentation/bloc/search_bloc.dart';
 import 'package:social_media_app_using_firebase/features/search/presentation/widgets/search_text_field.dart';

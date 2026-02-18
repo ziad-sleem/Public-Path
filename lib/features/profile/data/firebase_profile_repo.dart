@@ -19,8 +19,11 @@ class FirebaseProfileRepo implements ProfileRepo {
           .collection("usersProfile")
           .doc(uid)
           .get();
-      final user = ProfileUser.fromMap(snapshot.data()!);
-      return user;
+
+      if (snapshot.exists && snapshot.data() != null) {
+        return ProfileUser.fromMap(snapshot.data()!);
+      }
+      throw Exception('User profile not found');
     } catch (e) {
       throw Exception(e.toString());
     }
@@ -33,7 +36,7 @@ class FirebaseProfileRepo implements ProfileRepo {
     String? username,
     String? bio,
     String? profileImage,
-    String? coverImage,
+    String? phoneNumber,
   }) async {
     try {
       final Map<String, dynamic> data = {};
@@ -41,7 +44,7 @@ class FirebaseProfileRepo implements ProfileRepo {
       if (username != null) data['username'] = username;
       if (bio != null) data['bio'] = bio;
       if (profileImage != null) data['profileImage'] = profileImage;
-      if (coverImage != null) data['coverImage'] = coverImage;
+      if (phoneNumber != null) data['phoneNumber'] = phoneNumber;
 
       // nothing to update
       if (data.isEmpty) return;

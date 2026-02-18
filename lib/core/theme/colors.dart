@@ -21,7 +21,5 @@ class AppColors {
   static const Color myStrongGray = igGrey;
   static const Color myTransparent = Colors.transparent;
 
-
-    static const Color myRed = Colors.red;
-
+  static const Color myRed = Colors.red;
 }

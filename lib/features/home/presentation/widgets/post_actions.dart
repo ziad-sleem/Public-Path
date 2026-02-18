@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:social_media_app_using_firebase/core/theme/colors.dart';
-import 'package:social_media_app_using_firebase/core/widgets/my_text.dart';
+import 'package:social_media_app_using_firebase/core/widgets/app_text.dart';
 import 'package:social_media_app_using_firebase/features/post/domain/entities/post.dart';
 
 class PostActions extends StatefulWidget {
