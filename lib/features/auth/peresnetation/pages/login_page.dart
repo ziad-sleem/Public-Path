@@ -63,7 +63,7 @@ class _LoginPageState extends State<LoginPage> {
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                AuthPageBanar(authType: 'login'),
+                  AuthPageBanar(authType: 'login'),
                   // email
                   MyText(text: "EMAIL", fontSize: 20),
                   SizedBox(height: size.height * 0.01),

@@ -1,15 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+import 'package:social_media_app_using_firebase/core/routing/app_router.dart';
 import 'package:social_media_app_using_firebase/core/widgets/my_button.dart';
 import 'package:social_media_app_using_firebase/core/widgets/my_text.dart';
 import 'package:social_media_app_using_firebase/features/auth/peresnetation/cubits/cubit/auth_cubit.dart';
 import 'package:social_media_app_using_firebase/features/post/presentation/cubit/post_cubit.dart';
 import 'package:social_media_app_using_firebase/features/post/domain/entities/post.dart';
 import 'package:social_media_app_using_firebase/features/profile/presentation/cubits/cubit/profile_cubit.dart';
-import 'package:social_media_app_using_firebase/features/profile/presentation/pages/edit_profile_page.dart';
 import 'package:social_media_app_using_firebase/core/services/image_picker_service.dart';
-import 'package:social_media_app_using_firebase/features/profile/presentation/pages/follower_page.dart';
-import 'package:social_media_app_using_firebase/features/profile/presentation/pages/following_page.dart';
 import 'package:social_media_app_using_firebase/core/DI/injection.dart';
 import 'package:social_media_app_using_firebase/features/profile/presentation/widgets/profile_post_widget.dart';
 
@@ -188,12 +187,9 @@ class _ProfilePageState extends State<ProfilePage> {
                               SizedBox(width: size.width * 0.08),
 
                               GestureDetector(
-                                onTap: () => Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                        FollowerPage(uid: widget.uid),
-                                  ),
+                                onTap: () => context.push(
+                                  AppRoutes.followerPage,
+                                  extra: widget.uid,
                                 ),
                                 child: Column(
                                   children: [
@@ -206,12 +202,9 @@ class _ProfilePageState extends State<ProfilePage> {
 
                               // following
                               GestureDetector(
-                                onTap: () => Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                        FollowingPage(uid: widget.uid),
-                                  ),
+                                onTap: () => context.push(
+                                  AppRoutes.followingPage,
+                                  extra: widget.uid,
                                 ),
                                 child: Column(
                                   children: [
@@ -241,15 +234,10 @@ class _ProfilePageState extends State<ProfilePage> {
                                   width: size.width * 0.45,
                                   child: MyButton(
                                     text: 'Edit Profile',
-                                    onTap: () {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) =>
-                                              EditProfilePage(user: user),
-                                        ),
-                                      );
-                                    },
+                                    onTap: () => context.push(
+                                      AppRoutes.editProfilePage,
+                                      extra: user,
+                                    ),
                                   ),
                                 )
                               : SizedBox(

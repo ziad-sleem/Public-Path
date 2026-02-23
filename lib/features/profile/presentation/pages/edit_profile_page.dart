@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:social_media_app_using_firebase/core/widgets/my_button.dart';
 import 'package:social_media_app_using_firebase/core/widgets/my_text.dart';
 import 'package:social_media_app_using_firebase/features/profile/domain/models/profile_user.dart';
@@ -158,7 +159,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
       },
       listener: (context, state) {
         if (state is ProfileLoaded) {
-          Navigator.pop(context);
+          context.pop();
         }
       },
     );
