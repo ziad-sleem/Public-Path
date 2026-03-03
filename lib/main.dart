@@ -34,7 +34,7 @@ class MyApp extends StatelessWidget {
       child: MaterialApp.router(
         routerConfig: appRouter,
         debugShowCheckedModeBanner: false,
-        title: 'Pubic Path'
+        title: 'Pubic Path',
         theme: lightMode,
         darkTheme: darkMode,
       ),
