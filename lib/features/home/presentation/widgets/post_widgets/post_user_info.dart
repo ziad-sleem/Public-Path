@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:social_media_app_using_firebase/config/DI/injection.dart';
 import 'package:social_media_app_using_firebase/core/widgets/app_text.dart';
+import 'package:social_media_app_using_firebase/core/widgets/liquid_glass.dart';
 import 'package:social_media_app_using_firebase/features/auth/peresnetation/cubits/auth_cubit/auth_cubit.dart';
 import 'package:social_media_app_using_firebase/features/create_post/domain/entities/post.dart';
 import 'package:social_media_app_using_firebase/features/home/presentation/cubit/home_cubit.dart';
@@ -29,8 +30,9 @@ class PostUserInfo extends StatelessWidget {
     final currentUser = context.read<AuthCubit>().currentUser;
     final bool isOwnPost =
         (currentUser != null && currentUser.uid == post.userId);
-    return Container(
-      padding: const EdgeInsets.all(8.0),
+    return GlassContainer(
+      borderRadius: 18,
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
       child: GestureDetector(
         onTap: () {
           if (currentUser != null) {

@@ -10,6 +10,7 @@ class FullPreviewImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return GestureDetector(
       onTap: onTap, // Allow changing the image
       child: ClipRRect(
@@ -25,9 +26,9 @@ class FullPreviewImage extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: CircleAvatar(
-                backgroundColor: Colors.black54,
+                backgroundColor: colorScheme.surface.withOpacity(0.7),
                 child: IconButton(
-                  icon: const Icon(Icons.edit, color: Colors.white, size: 20),
+                  icon: Icon(Icons.edit, color: colorScheme.onSurface, size: 20),
                   onPressed: onTap,
                 ),
               ),

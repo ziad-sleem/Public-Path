@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:social_media_app_using_firebase/core/widgets/app_text.dart';
+import 'package:social_media_app_using_firebase/core/widgets/custom_snack_bar.dart';
 import 'package:social_media_app_using_firebase/features/auth/domain/entities/app_user.dart';
 import 'package:social_media_app_using_firebase/features/auth/peresnetation/cubits/auth_cubit/auth_cubit.dart';
 import 'package:social_media_app_using_firebase/features/create_post/presentation/widgets/caption_text_field.dart';
@@ -117,9 +118,7 @@ class _CreateVistasPageState extends State<CreateVistasPage> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-
+    final colorScheme = Theme.of(context).colorScheme;
     return BlocConsumer<CreateVideoCubit, CreateVideoState>(
       listener: (context, state) {
         if (state is CreateVideoUpLoading) {
@@ -132,12 +131,7 @@ class _CreateVistasPageState extends State<CreateVistasPage> {
           }
         } else if (state is CreateVideoError) {
           setState(() => _isUploadingVideo = false);
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: AppText(text: state.errorMessage),
-              backgroundColor: Colors.red,
-            ),
-          );
+          CustomSnackBar.error(context, state.errorMessage);
         }
       },
       builder: (context, state) {
@@ -145,6 +139,7 @@ class _CreateVistasPageState extends State<CreateVistasPage> {
             state is CreateVideoLoading || state is CreateVideoUpLoading;
 
         return Scaffold(
+          backgroundColor: colorScheme.surface,
           appBar: AppBar(
             elevation: 0,
             leading: IconButton(
@@ -161,11 +156,11 @@ class _CreateVistasPageState extends State<CreateVistasPage> {
               if (videoFile != null && !isLoading)
                 TextButton(
                   onPressed: releaseVistas,
-                  child: const AppText(
+                  child: AppText(
                     text: "Post",
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
-                    color: Color(0xFF0095F6),
+                    color: colorScheme.primary,
                   ),
                 ),
             ],
@@ -178,7 +173,7 @@ class _CreateVistasPageState extends State<CreateVistasPage> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        _buildEditor(context),
+                        _buildEditor(context, colorScheme),
                         const Divider(),
                         const SizedBox(height: 20),
                         _buildCoverPicker(context),
@@ -191,7 +186,7 @@ class _CreateVistasPageState extends State<CreateVistasPage> {
     );
   }
 
-  Widget _buildEditor(BuildContext context) {
+  Widget _buildEditor(BuildContext context, ColorScheme colorScheme) {
     final colorScheme = Theme.of(context).colorScheme;
 
     return Row(
@@ -212,10 +207,10 @@ class _CreateVistasPageState extends State<CreateVistasPage> {
                 ? Icon(Icons.video_call, color: colorScheme.inversePrimary)
                 : Stack(
                     children: [
-                      const Center(
+                      Center(
                         child: Icon(
                           Icons.play_circle_fill,
-                          color: Colors.white,
+                          color: colorScheme.onPrimary,
                         ),
                       ),
                       // You could show a generic thumbnail if you had a service for it,
@@ -225,11 +220,11 @@ class _CreateVistasPageState extends State<CreateVistasPage> {
                         child: Container(
                           alignment: Alignment.center,
                           width: double.infinity,
-                          color: Colors.black54,
-                          child: const AppText(
+                          color: colorScheme.surface.withOpacity(0.7),
+                          child: AppText(
                             text: "VIDEO",
                             fontSize: 10,
-                            color: Colors.white,
+                            color: colorScheme.onSurface,
                           ),
                         ),
                       ),

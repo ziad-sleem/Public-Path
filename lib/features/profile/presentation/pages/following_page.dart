@@ -10,7 +10,10 @@ class FollowingPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Scaffold(
+            backgroundColor: colorScheme.surface,
+
       appBar: AppBar(
         title: const AppText(text: "Following"),
         foregroundColor: Theme.of(context).colorScheme.primary,
@@ -29,10 +32,10 @@ class FollowingPage extends StatelessWidget {
               },
             );
           } else if (snapshot.hasData && snapshot.data!.isEmpty) {
-            return const Center(
+            return  Center(
               child: AppText(
                 text: "Not following anyone yet",
-                color: Colors.grey,
+                color: colorScheme.onSurfaceVariant,
               ),
             );
           } else if (snapshot.hasError) {

@@ -8,11 +8,12 @@ class PostTimeStamp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 2.0),
       child: AppText(
         text: _formatTimestamp(post.timeStamp),
-        color: Colors.grey,
+        color: colorScheme.onSurfaceVariant,
         fontSize: 12,
       ),
     );

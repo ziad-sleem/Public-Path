@@ -25,7 +25,7 @@ class _SearchTextFieldState extends State<SearchTextField> {
           hintText: 'Search users...',
           prefixIcon: const Icon(Icons.search),
           filled: true,
-          fillColor: Theme.of(context).colorScheme.secondary,
+          fillColor: Theme.of(context).colorScheme.tertiary,
           border: OutlineInputBorder(
             borderSide: BorderSide.none,
             borderRadius: BorderRadius.circular(8),

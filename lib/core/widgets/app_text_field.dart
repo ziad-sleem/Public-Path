@@ -42,22 +42,26 @@ class _AppTextFieldState extends State<AppTextField> {
       validator: (value) =>
           AppValidators.validate(value: value, type: widget.fieldType),
       decoration: InputDecoration(
+        hintStyle: TextStyle(
+          color: AppColors.igWhite,
+          fontWeight: FontWeight.w700,
+        ),
         hintText: _getHintText(),
         prefixIcon: Icon(_getPrefixIcon()),
-        prefixIconColor: AppColors.igGrey,
+        prefixIconColor: AppColors.igBlack,
         filled: true,
-        fillColor: Theme.of(context).colorScheme.secondary,
+        fillColor: Theme.of(context).colorScheme.tertiary,
         border: OutlineInputBorder(
           borderSide: BorderSide.none,
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(14),
         ),
         enabledBorder: OutlineInputBorder(
           borderSide: BorderSide.none,
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(14),
         ),
         focusedBorder: OutlineInputBorder(
           borderSide: BorderSide.none,
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(14),
         ),
         suffixIcon: _isPassword
             ? IconButton(

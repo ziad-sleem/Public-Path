@@ -5,6 +5,7 @@ import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:social_media_app_using_firebase/config/firebase.dart/firebase_options.dart';
 import 'package:social_media_app_using_firebase/config/DI/injection.dart';
+import 'package:social_media_app_using_firebase/core/widgets/custom_snack_bar.dart';
 import 'package:social_media_app_using_firebase/features/auth/peresnetation/cubits/auth_cubit/auth_cubit.dart';
 import 'package:social_media_app_using_firebase/features/auth/peresnetation/cubits/auth_cubit/auth_state.dart';
 import 'package:social_media_app_using_firebase/features/auth/peresnetation/pages/auth_pages/auth_page.dart';
@@ -22,7 +23,6 @@ import 'package:social_media_app_using_firebase/features/main_page/presentation/
 import 'package:social_media_app_using_firebase/features/profile/presentation/cubits/cubit/profile_cubit.dart';
 import 'package:social_media_app_using_firebase/core/theme/dark_mode.dart';
 import 'package:social_media_app_using_firebase/core/theme/light_mode.dart';
-import 'package:social_media_app_using_firebase/core/widgets/app_text.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -89,21 +89,12 @@ class MyApp extends StatelessWidget {
                   }
                 }
                 if (state is AuthError) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      backgroundColor: Colors.red,
-                      content: AppText(text: state.errorMessage),
-                    ),
-                  );
+                  CustomSnackBar.error(context, state.errorMessage);
                 }
                 if (state is AuthPasswordResetEmailSent) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      backgroundColor: Colors.green,
-                      content: AppText(
-                        text: "Password reset link sent! Check your email.",
-                      ),
-                    ),
+                  CustomSnackBar.success(
+                    context,
+                    "Password reset link sent! Check your email.",
                   );
                 }
               },

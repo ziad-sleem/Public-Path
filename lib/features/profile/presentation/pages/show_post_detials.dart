@@ -8,7 +8,11 @@ class ShowPostDetials extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Scaffold(
+            backgroundColor: colorScheme.surface,
+
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.only(top: 30.0),

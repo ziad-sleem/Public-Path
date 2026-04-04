@@ -56,4 +56,3 @@ class MainPage extends StatelessWidget {
     );
   }
 }
-

@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:social_media_app_using_firebase/config/DI/injection.dart';
 import 'package:social_media_app_using_firebase/config/cloudinary/image_picker_service.dart';
 import 'package:social_media_app_using_firebase/core/enums/field_type.dart';
 import 'package:social_media_app_using_firebase/core/widgets/app_button.dart';
@@ -132,52 +133,60 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
     profileCubit.updateUser(
       uid: widget.user.uid,
-      bio: bio.isNotEmpty ? bio : null,
+      bio: bio,
       username: userName,
       phoneNumber: phoneNumber,
       // Only update profile image if a new image was selected
       profileImage: _selectedImageBase64,
     );
-
   }
 
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
+    final colorScheme = Theme.of(context).colorScheme;
 
     return BlocConsumer<ProfileCubit, ProfileState>(
-      builder: (context, state) {
-        if (state is ProfileLoading) {
-          return Scaffold(
-            body: Column(
-              children: [
-                CircularProgressIndicator.adaptive(),
-                AppText(text: "Loading..."),
-              ],
-            ),
-          );
-        } else if (state is ProfileError) {
-          return AppText(text: "NO USER FOUND");
-        } else {
-          return buildEditPage(size: size);
-        }
-      },
       listener: (context, state) {
         if (state is ProfileLoaded) {
           Navigator.pop(context);
+        } else if (state is ProfileError) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: AppText(text: "Update Failed: ${state.errorMessage}"),
+              backgroundColor: Colors.red,
+            ),
+          );
         }
+      },
+      builder: (context, state) {
+        final isLoading = state is ProfileLoading;
+
+        return Scaffold(
+          backgroundColor: colorScheme.surface,
+          appBar: AppBar(
+            title: const AppText(text: "Edit Profile"),
+            foregroundColor: colorScheme.primary,
+          ),
+          body: Stack(
+            children: [
+              buildEditPage(size: size),
+              if (isLoading)
+                Container(
+                  color: Colors.black.withOpacity(0.5),
+                  child: const Center(
+                    child: CircularProgressIndicator.adaptive(),
+                  ),
+                ),
+            ],
+          ),
+        );
       },
     );
   }
 
   Widget buildEditPage({double uploadProgress = 0.0, required Size size}) {
-    return Scaffold(
-      appBar: AppBar(
-        title: AppText(text: "Edit Profile"),
-
-        foregroundColor: Theme.of(context).colorScheme.primary,
-      ),
-      body: SingleChildScrollView(
+    return SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 25),
         child: Form(
           key: _formkey,
@@ -317,7 +326,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
             ],
           ),
         ),
-      ),
-    );
+      );
   }
 }

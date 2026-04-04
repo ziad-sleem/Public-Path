@@ -55,7 +55,8 @@ class PostCubit extends Cubit<PostState> {
       await postRepo.createPost(newPost);
 
       // re-fetch all posts
-      fetchAllPosts();
+      await fetchAllPosts();
+
     } catch (e) {
       emit(PostError(errorMessage: 'Failed to create post: ${e.toString()}'));
     }
@@ -64,9 +65,8 @@ class PostCubit extends Cubit<PostState> {
   // fetch all posts
   Future<void> fetchAllPosts() async {
     try {
-      if (loaded) return;
       emit(PostLoading());
-      final posts = await homeRepo.fectchAllPosts();
+      final posts = homeRepo.fectchAllPosts();
       emit(PostLoaded(posts: posts));
     } catch (e) {
       emit(PostError(errorMessage: 'Failed to fetch post: ${e.toString()}'));

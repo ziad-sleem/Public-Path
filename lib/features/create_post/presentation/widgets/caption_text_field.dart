@@ -3,7 +3,11 @@ import 'package:flutter/material.dart';
 class CaptionTextField extends StatelessWidget {
   final TextEditingController textController;
   final String hintText;
-  const CaptionTextField({super.key, required this.textController, required this.hintText});
+  const CaptionTextField({
+    super.key,
+    required this.textController,
+    required this.hintText,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -12,7 +16,7 @@ class CaptionTextField extends StatelessWidget {
     return TextField(
       controller: textController,
       maxLines: 4,
-      cursorColor: const Color(0xFF0095F6),
+      cursorColor: colorScheme.primary,
       decoration: InputDecoration(
         hintText: hintText,
         hintStyle: TextStyle(

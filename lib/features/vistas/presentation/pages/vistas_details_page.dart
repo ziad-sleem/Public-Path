@@ -40,7 +40,11 @@ class _VistasDetailsPageState extends State<VistasDetailsPage> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Scaffold(
+      backgroundColor: colorScheme.surface,
+
       appBar: AppBar(title: Text(widget.video.userName)),
       body: SingleChildScrollView(
         child: Column(

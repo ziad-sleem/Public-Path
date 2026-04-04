@@ -23,37 +23,33 @@ class VideoRepositoryImpl implements VideoRepository {
       firebaseFirestore.collection('videos');
 
   @override
-  Future<List<VideoEntity>> fetchAllVideos() async {
+  Stream<List<VideoEntity>> fetchAllVideos() {
     try {
-      final response = await videoCollection
+      return videoCollection
           .orderBy('timeStamp', descending: true)
-          .get();
-
-      List<VideoEntity> videos = response.docs
-          .map(
-            (docs) => VideoEntity.fromMap(docs.data() as Map<String, dynamic>),
-          )
-          .toList();
-      return videos;
+          .snapshots()
+          .map((snapshot) {
+        return snapshot.docs
+            .map((doc) => VideoEntity.fromMap(doc.data() as Map<String, dynamic>))
+            .toList();
+      });
     } catch (e) {
       throw Exception("Error fetching Videos: ${e.toString()}");
     }
   }
 
   @override
-  Future<List<VideoEntity>> fetchAllVideosByUserId(String userId) async {
+  Stream<List<VideoEntity>> fetchAllVideosByUserId(String userId) {
     try {
-      final response = await videoCollection
+      return videoCollection
           .where('userId', isEqualTo: userId)
           .orderBy('timeStamp', descending: true)
-          .get();
-
-      List<VideoEntity> videos = response.docs
-          .map(
-            (docs) => VideoEntity.fromMap(docs.data() as Map<String, dynamic>),
-          )
-          .toList();
-      return videos;
+          .snapshots()
+          .map((snapshot) {
+        return snapshot.docs
+            .map((doc) => VideoEntity.fromMap(doc.data() as Map<String, dynamic>))
+            .toList();
+      });
     } catch (e) {
       throw Exception("Error fetching Videos: ${e.toString()}");
     }

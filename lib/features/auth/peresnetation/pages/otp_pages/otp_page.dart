@@ -1,14 +1,12 @@
-
-
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pinput/pinput.dart';
 import 'package:social_media_app_using_firebase/core/widgets/app_button.dart';
 import 'package:social_media_app_using_firebase/core/widgets/app_text.dart';
+import 'package:social_media_app_using_firebase/core/widgets/custom_snack_bar.dart';
 import 'package:social_media_app_using_firebase/features/auth/peresnetation/cubits/auth_cubit/auth_cubit.dart';
 import 'package:social_media_app_using_firebase/features/auth/peresnetation/cubits/otp_cubit/cubit/otp_cubit.dart';
-
 
 class OtpPage extends StatefulWidget {
   final String phoneNumber;
@@ -98,30 +96,20 @@ class _OtpPageState extends State<OtpPage> {
         listener: (context, state) {
           if (state is OtpVerified) {
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
+              SnackBar(
                 content: AppText(text: 'Verification Successful!'),
-                backgroundColor: Colors.green,
+                backgroundColor: colorScheme.primary,
               ),
             );
             // After OTP successfully verified, checking auth will find the user logged in
             context.read<AuthCubit>().checkAuth();
           }
           if (state is OtpError) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: AppText(text: state.message),
-                backgroundColor: Colors.red,
-              ),
-            );
+            CustomSnackBar.error(context, state.message);
           }
           if (state is OtpCodeSent) {
             _startResendTimer();
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: AppText(text: 'OTP Sent!'),
-                backgroundColor: Colors.green,
-              ),
-            );
+            CustomSnackBar.success(context, "OTP Sent!!");
           }
         },
         child: Padding(
@@ -158,7 +146,7 @@ class _OtpPageState extends State<OtpPage> {
                   ),
                   errorPinTheme: defaultPinTheme.copyWith(
                     decoration: defaultPinTheme.decoration!.copyWith(
-                      border: Border.all(color: Colors.red),
+                      border: Border.all(color: colorScheme.error),
                     ),
                   ),
                   validator: (value) {
@@ -211,7 +199,9 @@ class _OtpPageState extends State<OtpPage> {
                       text: _canResend
                           ? "Resend"
                           : "Resend in ${_resendSeconds}s",
-                      color: _canResend ? colorScheme.primary : Colors.grey,
+                      color: _canResend
+                          ? colorScheme.primary
+                          : colorScheme.onSurfaceVariant,
                       fontWeight: FontWeight.bold,
                     ),
                   ),

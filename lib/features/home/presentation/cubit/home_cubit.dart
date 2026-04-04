@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:injectable/injectable.dart';
@@ -12,7 +13,15 @@ part 'home_state.dart';
 class HomeCubit extends Cubit<HomeState> {
   final HomeRepo homeRepo;
   bool loaded = false;
+  StreamSubscription? _postSubscription;
+
   HomeCubit({required this.homeRepo}) : super(HomeInitial());
+
+  @override
+  Future<void> close() {
+    _postSubscription?.cancel();
+    return super.close();
+  }
 
   void doEvent(HomeEvent event) {
     switch (event) {
@@ -37,8 +46,15 @@ class HomeCubit extends Cubit<HomeState> {
   Future<void> _fetchAllPosts() async {
     try {
       emit(HomeLoading());
-      final posts = await homeRepo.fectchAllPosts();
-      emit(HomeLoaded(posts: posts));
+      _postSubscription?.cancel();
+      _postSubscription = homeRepo.fectchAllPosts().listen(
+        (posts) {
+          emit(HomeLoaded(posts: posts));
+        },
+        onError: (e) {
+          emit(HomeError(errorMessage: 'Failed to fetch post: ${e.toString()}'));
+        },
+      );
     } catch (e) {
       emit(HomeError(errorMessage: 'Failed to fetch post: ${e.toString()}'));
     }
@@ -47,10 +63,18 @@ class HomeCubit extends Cubit<HomeState> {
   // refresh posts silently without showing loading indicator
   Future<void> _refreshPosts() async {
     try {
-      final posts = await homeRepo.fectchAllPosts();
-      emit(HomeLoaded(posts: posts));
+      _postSubscription?.cancel();
+      _postSubscription = homeRepo.fectchAllPosts().listen(
+        (posts) {
+          emit(HomeLoaded(posts: posts));
+        },
+        onError: (e) {
+          if (state is! HomeLoaded) {
+            emit(HomeError(errorMessage: 'Failed to fetch post: ${e.toString()}'));
+          }
+        },
+      );
     } catch (e) {
-      // Silently fail - don't show error if we already have posts
       if (state is! HomeLoaded) {
         emit(HomeError(errorMessage: 'Failed to fetch post: ${e.toString()}'));
       }
@@ -61,8 +85,15 @@ class HomeCubit extends Cubit<HomeState> {
   Future<void> _fetchAllPostsByUserId({required String userId}) async {
     try {
       emit(HomeLoading());
-      final posts = await homeRepo.fectchAllPostsByUserId(userId);
-      emit(HomeLoaded(posts: posts));
+      _postSubscription?.cancel();
+      _postSubscription = homeRepo.fectchAllPostsByUserId(userId).listen(
+        (posts) {
+          emit(HomeLoaded(posts: posts));
+        },
+        onError: (e) {
+          emit(HomeError(errorMessage: 'Failed to fetch post: ${e.toString()}'));
+        },
+      );
     } catch (e) {
       emit(HomeError(errorMessage: 'Failed to fetch post: ${e.toString()}'));
     }

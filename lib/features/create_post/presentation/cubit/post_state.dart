@@ -14,7 +14,7 @@ final class PostLoading extends PostState {}
 final class PostUpLoading extends PostState {}
 
 final class PostLoaded extends PostState {
-  final List<Post> posts;
+  final Stream<List<Post>> posts;
 
   const PostLoaded({required this.posts});
   @override

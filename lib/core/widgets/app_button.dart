@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:social_media_app_using_firebase/core/theme/colors.dart';
 import 'package:social_media_app_using_firebase/core/widgets/app_text.dart';
 
 class AppButton extends StatelessWidget {
@@ -21,7 +22,6 @@ class AppButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final buttonColor = color ?? theme.colorScheme.primary;
-    final textCol = textColor ?? theme.colorScheme.onPrimary;
 
     return GestureDetector(
       onTap: isLoading ? null : onTap,
@@ -39,14 +39,14 @@ class AppButton extends StatelessWidget {
                   width: 20,
                   child: CircularProgressIndicator(
                     strokeWidth: 2,
-                    color: textCol,
+                    color: AppColors.igWhite,
                   ),
                 )
               : AppText(
                   text: text,
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
-                  color: textCol,
+                  color: AppColors.igWhite,
                 ),
         ),
       ),

@@ -2,7 +2,12 @@ import 'package:social_media_app_using_firebase/core/enums/field_type.dart';
 
 class AppValidators {
   static String? validate({required String? value, required FieldType type}) {
-    if (value == null || value.trim().isEmpty) {
+    final isEmpty = value == null || value.trim().isEmpty;
+
+    if (isEmpty) {
+      if (type == FieldType.bio || type == FieldType.phoneNumber || type == FieldType.none) {
+        return null; // these fields are optional
+      }
       return _emptyMessage(type);
     }
 

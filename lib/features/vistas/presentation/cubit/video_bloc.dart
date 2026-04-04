@@ -47,12 +47,11 @@ class VideoBloc extends Bloc<VideoEvent, VideoState> {
     Emitter<VideoState> emit,
   ) async {
     emit(const VideoLoading());
-    try {
-      final videos = await _repository.fetchAllVideos();
-      emit(VideosLoaded(videos));
-    } catch (e) {
-      emit(VideoError("Failed to fetch videos: ${e.toString()}"));
-    }
+    await emit.forEach(
+      _repository.fetchAllVideos(),
+      onData: (videos) => VideosLoaded(videos),
+      onError: (e, stack) => VideoError("Failed to fetch videos: ${e.toString()}"),
+    );
   }
 
   Future<void> _onFetchVideosByUserId(
@@ -60,12 +59,11 @@ class VideoBloc extends Bloc<VideoEvent, VideoState> {
     Emitter<VideoState> emit,
   ) async {
     emit(const VideoLoading());
-    try {
-      final videos = await _repository.fetchAllVideosByUserId(event.userId);
-      emit(VideosLoaded(videos));
-    } catch (e) {
-      emit(VideoError("Failed to fetch user videos: ${e.toString()}"));
-    }
+    await emit.forEach(
+      _repository.fetchAllVideosByUserId(event.userId),
+      onData: (videos) => VideosLoaded(videos),
+      onError: (e, stack) => VideoError("Failed to fetch user videos: ${e.toString()}"),
+    );
   }
 
   Future<void> _onLikeVideo(
@@ -74,9 +72,6 @@ class VideoBloc extends Bloc<VideoEvent, VideoState> {
   ) async {
     try {
       await _repository.likeVideo(event.videoId, event.userId);
-
-      final videos = await _repository.fetchAllVideos();
-      emit(VideosLoaded(videos));
     } catch (e) {
       emit(VideoError("Failed to like video: ${e.toString()}"));
     }
@@ -88,9 +83,6 @@ class VideoBloc extends Bloc<VideoEvent, VideoState> {
   ) async {
     try {
       await _repository.dislikeVideo(event.videoId, event.userId);
-
-      final videos = await _repository.fetchAllVideos();
-      emit(VideosLoaded(videos));
     } catch (e) {
       emit(VideoError("Failed to dislike video: ${e.toString()}"));
     }

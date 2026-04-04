@@ -41,7 +41,11 @@ class _SearchPageState extends State<SearchPage> {
 
   @override
   Widget build(BuildContext context) {
+        final colorScheme = Theme.of(context).colorScheme;
+
     return Scaffold(
+            backgroundColor: colorScheme.surface,
+
       appBar: SearchAppBar(),
       body: Column(
         children: [

@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:social_media_app_using_firebase/core/widgets/app_button.dart';
 import 'package:social_media_app_using_firebase/core/widgets/app_text.dart';
+import 'package:social_media_app_using_firebase/core/widgets/custom_snack_bar.dart';
 import 'package:social_media_app_using_firebase/features/auth/domain/entities/app_user.dart';
 import 'package:social_media_app_using_firebase/features/auth/peresnetation/cubits/auth_cubit/auth_cubit.dart';
 import 'package:social_media_app_using_firebase/features/create_post/domain/entities/post.dart';
@@ -55,8 +56,8 @@ class _UploadPostPageState extends State<UploadPostPage> {
     final XFile? pickedImage = await imagePicker.pickImage(
       source: ImageSource.gallery,
       imageQuality: 50,
-      maxWidth: 1080, 
-      maxHeight: 1080
+      maxWidth: 1080,
+      maxHeight: 1080,
     );
 
     if (pickedImage != null && mounted) {
@@ -110,9 +111,6 @@ class _UploadPostPageState extends State<UploadPostPage> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-
     return BlocConsumer<PostCubit, PostState>(
       listener: (context, state) {
         if (state is PostUpLoading) {
@@ -135,18 +133,15 @@ class _UploadPostPageState extends State<UploadPostPage> {
               _isUploadingPost = false;
             });
           }
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: AppText(text: state.errorMessage),
-              backgroundColor: Colors.redAccent,
-            ),
-          );
+          CustomSnackBar.error(context, state.errorMessage);
         }
       },
       builder: (context, state) {
         final isLoading = state is PostLoading || state is PostUpLoading;
+        final colorScheme = Theme.of(context).colorScheme;
 
         return Scaffold(
+          backgroundColor: colorScheme.surface,
           appBar: AppBar(
             elevation: 0,
             leading: IconButton(
@@ -163,11 +158,11 @@ class _UploadPostPageState extends State<UploadPostPage> {
               if (imagePickedFile != null && !isLoading)
                 TextButton(
                   onPressed: uploadPost,
-                  child: const AppText(
+                  child: AppText(
                     text: "Share",
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
-                    color: Color(0xFF0095F6),
+                    color: colorScheme.primary,
                   ),
                 ),
             ],
@@ -227,7 +222,12 @@ class _UploadPostPageState extends State<UploadPostPage> {
 
               const SizedBox(width: 16),
               // Caption field
-              Expanded(child: CaptionTextField(textController: textController, hintText: "Write a Caption...",)),
+              Expanded(
+                child: CaptionTextField(
+                  textController: textController,
+                  hintText: "Write a Caption...",
+                ),
+              ),
             ],
           ),
           const Divider(),

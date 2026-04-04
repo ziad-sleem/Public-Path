@@ -27,7 +27,9 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Scaffold(
+      backgroundColor: colorScheme.surface,
       appBar: MyHomeAppBar(),
       body: BlocBuilder<HomeCubit, HomeState>(
         builder: (context, state) {
@@ -44,7 +46,8 @@ class _HomePageState extends State<HomePage> {
                     SizedBox(height: MediaQuery.of(context).size.height * 0.3),
                     const Center(
                       child: AppText(
-                        text: '📍No posts available, follow more people to see more posts📍',
+                        text:
+                            '📍No posts available, follow more people to see more posts📍',
                         textAlign: TextAlign.center,
                       ),
                     ),
@@ -68,7 +71,7 @@ class _HomePageState extends State<HomePage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  AppText(text: state.errorMessage, color: Colors.red),
+                  AppText(text: state.errorMessage, color: colorScheme.error),
                   const SizedBox(height: 16),
                   ElevatedButton(
                     onPressed: _fetchPosts,

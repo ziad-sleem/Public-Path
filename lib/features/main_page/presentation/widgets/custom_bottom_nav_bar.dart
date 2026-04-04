@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:social_media_app_using_firebase/core/theme/colors.dart';
 import 'package:social_media_app_using_firebase/core/widgets/liquid_glass.dart';
 import 'package:social_media_app_using_firebase/features/main_page/presentation/cubit/main_cubit.dart';
 
@@ -9,13 +10,14 @@ class CustomBottomNavBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Container(
       margin: const EdgeInsets.fromLTRB(15, 0, 15, 24),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(30),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.2),
+            color: AppColors.myTransparent,
             blurRadius: 20,
             spreadRadius: 1,
             offset: const Offset(0, 5),
@@ -36,6 +38,7 @@ class CustomBottomNavBar extends StatelessWidget {
                 Icons.home_outlined,
                 Icons.home,
                 "Home",
+                colorScheme,
               ),
               _buildNavItem(
                 context,
@@ -43,14 +46,23 @@ class CustomBottomNavBar extends StatelessWidget {
                 Icons.slow_motion_video_rounded,
                 Icons.slow_motion_video_rounded,
                 "Vistas",
+                colorScheme,
               ),
-              _buildNavItem(context, 2, Icons.search, Icons.search, "Search"),
+              _buildNavItem(
+                context,
+                2,
+                Icons.search,
+                Icons.search,
+                "Search",
+                colorScheme,
+              ),
               _buildNavItem(
                 context,
                 3,
                 Icons.person_outline,
                 Icons.person,
                 "Profile",
+                colorScheme,
               ),
             ],
           ),
@@ -65,6 +77,7 @@ class CustomBottomNavBar extends StatelessWidget {
     IconData icon,
     IconData activeIcon,
     String label,
+    ColorScheme colorScheme,
   ) {
     final bool isSelected = selectedIndex == index;
     final Color primaryColor = Theme.of(context).colorScheme.primary;
@@ -86,7 +99,7 @@ class CustomBottomNavBar extends StatelessWidget {
           children: [
             Icon(
               isSelected ? activeIcon : icon,
-              color: isSelected ? primaryColor : Colors.grey.shade400,
+              color: isSelected ? primaryColor : colorScheme.onSurfaceVariant,
               size: 26,
             ),
             if (isSelected)

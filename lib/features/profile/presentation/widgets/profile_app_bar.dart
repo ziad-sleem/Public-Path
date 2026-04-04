@@ -10,7 +10,9 @@ class ProfileAppBar extends StatelessWidget implements PreferredSizeWidget {
   Size get preferredSize => const Size.fromHeight(60);
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return AppBar(
+      backgroundColor: colorScheme.surface,
       title: AppText(
         text: 'Profile',
         fontWeight: FontWeight.bold,
@@ -19,7 +21,7 @@ class ProfileAppBar extends StatelessWidget implements PreferredSizeWidget {
       actions: [
         TextButton(
           onPressed: () {
-            _showLogoutDialog(context);
+            _showLogoutDialog(context, colorScheme);
           },
           child: AppText(text: "Logout"),
         ),
@@ -27,7 +29,7 @@ class ProfileAppBar extends StatelessWidget implements PreferredSizeWidget {
     );
   }
 
-  void _showLogoutDialog(BuildContext context) {
+  void _showLogoutDialog(BuildContext context, ColorScheme colorScheme) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -43,7 +45,7 @@ class ProfileAppBar extends StatelessWidget implements PreferredSizeWidget {
               Navigator.pop(context);
               context.read<AuthCubit>().logout();
             },
-            child: AppText(text: 'Logout', color: Colors.red),
+            child: AppText(text: 'Logout', color: colorScheme.error),
           ),
         ],
       ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:social_media_app_using_firebase/core/widgets/app_text.dart';
+import 'package:social_media_app_using_firebase/core/widgets/custom_snack_bar.dart';
 import 'package:social_media_app_using_firebase/features/auth/peresnetation/cubits/auth_cubit/auth_cubit.dart';
 
 class ForgetPasswordWidget extends StatelessWidget {
@@ -16,11 +17,7 @@ class ForgetPasswordWidget extends StatelessWidget {
           if (emailController.text.isNotEmpty) {
             context.read<AuthCubit>().resetPassword(emailController.text);
           } else {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: AppText(text: "Please enter your email first"),
-              ),
-            );
+            CustomSnackBar.error(context, "Please enter your email first");
           }
         },
         child: AppText(text: 'Forget password'),

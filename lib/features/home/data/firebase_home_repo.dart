@@ -23,39 +23,38 @@ class FirebaseHomeRepo implements HomeRepo {
       firebaseFirestore.collection('posts');
 
   @override
-  Future<List<Post>> fectchAllPosts() async {
+  Stream<List<Post>> fectchAllPosts() async* {
     try {
-      final postsSnapshot = await postCollection
-          .orderBy('timeStamp', descending: true)
-          .get();
-
-      final List<Post> allPostsSnapshot = postsSnapshot.docs
-          .map((doc) => Post.fromMap(doc.data() as Map<String, dynamic>))
-          .toList();
-
       final currentUser = await authRepo.getCurrentUser();
 
-      if (currentUser == null) {
-        dev.log("FirebaseHomeRepo: currentUser is null");
-        return [];
-      }
+     
 
       final followings = await profileRepo.fetchFollowings(
-        uid: currentUser.uid,
+        uid: currentUser!.uid,
       );
-      
+
       final followingList = followings?.following ?? [];
       dev.log("FirebaseHomeRepo: User ${currentUser.uid} follows ${followingList.length} users: $followingList");
 
-      final List<Post> filteredPosts = allPostsSnapshot.where((post) {
-        final bool isMine = post.userId == currentUser.uid;
-        final bool isFollowing = followingList.contains(post.userId);
-        return isMine || isFollowing;
-      }).toList();
+      yield* postCollection
+          .orderBy('timeStamp', descending: true)
+          .snapshots()
+          .map((snapshot) {
+        final allPosts = snapshot.docs
+            .map((doc) => Post.fromMap(doc.data() as Map<String, dynamic>))
+            .toList();
 
-      dev.log("FirebaseHomeRepo: All posts: ${allPostsSnapshot.length}, Filtered posts: ${filteredPosts.length}");
+        final filteredPosts = allPosts.where((post) {
+          final bool isMine = post.userId == currentUser.uid;
+          final bool isFollowing = followingList.contains(post.userId);
+          return isMine || isFollowing;
+        }).toList();
 
-      return filteredPosts;
+        dev.log(
+            "FirebaseHomeRepo: All posts: ${allPosts.length}, Filtered posts: ${filteredPosts.length}");
+
+        return filteredPosts;
+      });
     } catch (e) {
       dev.log("FirebaseHomeRepo Error: ${e.toString()}");
       throw Exception("Error fetching posts: ${e.toString()}");
@@ -63,17 +62,17 @@ class FirebaseHomeRepo implements HomeRepo {
   }
 
   @override
-  Future<List<Post>> fectchAllPostsByUserId(String userId) async {
+  Stream<List<Post>> fectchAllPostsByUserId(String userId) {
     try {
-      final postSnapshot = await postCollection
+      return postCollection
           .where('userId', isEqualTo: userId)
-          .get();
-
-      List<Post> allPostsByUserId = postSnapshot.docs
-          .map((doc) => Post.fromMap(doc.data() as Map<String, dynamic>))
-          .toList();
-
-      return allPostsByUserId;
+          .snapshots()
+          .map((snapshot) {
+        List<Post> allPostsByUserId = snapshot.docs
+            .map((doc) => Post.fromMap(doc.data() as Map<String, dynamic>))
+            .toList();
+        return allPostsByUserId;
+      });
     } catch (e) {
       throw Exception("Error fetching posts: ${e.toString()}");
     }

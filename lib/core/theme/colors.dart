@@ -16,6 +16,11 @@ class AppColors {
   // General shades
   static const Color igGrey = Color(0xFF8E8E8E);
 
+  // Glass/Blur Tokens
+  static const Color igGlass = Color(0x26FFFFFF); // 15% white
+  static const Color igGlassSurface = Color(0x1AFFFFFF); // 10% white
+  static const Color igFog = Color(0x33FFFFFF); // 20% white for borders
+
   // Legacy mapping to prevent breakages while refactoring
   static const Color mySecondTextColor = igGrey;
   static const Color myStrongGray = igGrey;

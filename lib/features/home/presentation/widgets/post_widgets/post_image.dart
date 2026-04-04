@@ -8,6 +8,7 @@ class PostImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     if (post.imageUrl.isEmpty) {
       return const SizedBox.shrink();
     }
@@ -21,27 +22,27 @@ class PostImage extends StatelessWidget {
               if (loadingProgress == null) return child;
               return Container(
                 height: 300,
-                color: Colors.grey[900],
+                color: colorScheme.surface,
                 child: const Center(
                   child: CircularProgressIndicator.adaptive(),
                 ),
               );
             },
             errorBuilder: (context, error, stackTrace) =>
-                _buildErrorContainer(),
+                _buildErrorContainer(colorScheme),
           )
         : Image.memory(
             base64Decode(post.imageUrl),
             fit: BoxFit.cover,
             width: double.infinity,
             errorBuilder: (context, error, stackTrace) =>
-                _buildErrorContainer(),
+                _buildErrorContainer(colorScheme),
           );
   }
 
-  Widget _buildErrorContainer() {
+  Widget _buildErrorContainer(dynamic colorScheme) {
     return Container(
-      color: Colors.grey[300],
+      color: colorScheme.surfaceVariant,
       height: 200,
       width: double.infinity,
       child: const Icon(Icons.error),

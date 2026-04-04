@@ -64,11 +64,15 @@ class _OtherUserProfilePageState extends State<OtherUserProfilePage> {
 
   @override
   Widget build(BuildContext context) {
+        final colorScheme = Theme.of(context).colorScheme;
+
     final size = MediaQuery.of(context).size;
     return BlocBuilder<ProfileCubit, ProfileState>(
       builder: (context, state) {
         if (state is ProfileLoading) {
           return Scaffold(
+                  backgroundColor: colorScheme.surface,
+
             body: Center(child: CircularProgressIndicator.adaptive()),
           );
         } else if (state is ProfileLoaded) {
@@ -80,6 +84,8 @@ class _OtherUserProfilePageState extends State<OtherUserProfilePage> {
           final bio = user.bio == '' ? 'no bio yet...' : user.bio;
 
           return Scaffold(
+                  backgroundColor: colorScheme.surface,
+
             appBar: AppBar(
               title: AppText(
                 text: 'Profile',

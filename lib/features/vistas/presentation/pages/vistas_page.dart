@@ -17,7 +17,10 @@ class VistasPage extends StatefulWidget {
 class _VistasPageState extends State<VistasPage> {
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Scaffold(
+      backgroundColor: colorScheme.surface,
+
       appBar: VistasAppBar(),
       body: BlocBuilder<VideoBloc, VideoState>(
         builder: (context, state) {

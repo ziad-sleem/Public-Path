@@ -14,7 +14,7 @@ class AuthPageBanar extends StatelessWidget {
           padding: const EdgeInsets.symmetric(vertical: 12.0),
           child: Center(
             child: AppText(
-              text: "Public Path",
+              text: "NovaLeaf",
               fontSize: 40,
               fontWeight: FontWeight.bold,
               color: Theme.of(context).colorScheme.primary,

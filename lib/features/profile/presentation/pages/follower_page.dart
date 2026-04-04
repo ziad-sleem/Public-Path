@@ -10,7 +10,10 @@ class FollowerPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Scaffold(
+      backgroundColor: colorScheme.surface,
       appBar: AppBar(
         title: const AppText(text: "Followers"),
         foregroundColor: Theme.of(context).colorScheme.primary,
@@ -29,8 +32,11 @@ class FollowerPage extends StatelessWidget {
               },
             );
           } else if (snapshot.hasData && snapshot.data!.isEmpty) {
-            return const Center(
-              child: AppText(text: "No followers yet", color: Colors.grey),
+            return Center(
+              child: AppText(
+                text: "No followers yet",
+                color: colorScheme.onSurfaceVariant,
+              ),
             );
           } else if (snapshot.hasError) {
             return Center(child: AppText(text: "Error: ${snapshot.error}"));

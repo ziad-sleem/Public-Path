@@ -208,100 +208,114 @@ class _CommentSheetState extends State<CommentSheet> {
             child: BlocBuilder<PostCubit, PostState>(
               builder: (context, state) {
                 if (state is PostLoaded) {
-                  // Find the updated post in the list
-                  final updatedPost = state.posts.firstWhere(
-                    (p) => p.id == widget.post.id,
-                    orElse: () => widget.post,
-                  );
+                  return StreamBuilder<List<Post>>(
+                    stream: state.posts,
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const Center(child: CircularProgressIndicator());
+                      }
+                      
+                      if (snapshot.hasError) {
+                        return Center(child: AppText(text: 'Error loading comments'));
+                      }
 
-                  if (updatedPost.comments.isEmpty) {
-                    return Center(
-                      child: AppText(
-                        text: 'Be the first to add comment!',
-                        color: Theme.of(
-                          context,
-                        ).colorScheme.onSurface.withOpacity(0.6),
-                      ),
-                    );
-                  }
+                      // Find the updated post in the stream data
+                      final postList = snapshot.data ?? [];
+                      final updatedPost = postList.firstWhere(
+                        (p) => p.id == widget.post.id,
+                        orElse: () => widget.post,
+                      );
 
-                  return ListView.builder(
-                    padding: const EdgeInsets.all(16),
-                    itemCount: updatedPost.comments.length,
-                    itemBuilder: (context, index) {
-                      final comment = updatedPost.comments[index];
-                      final isOwner =
-                          context.read<AuthCubit>().currentUser?.uid ==
-                          comment.userId;
+                      if (updatedPost.comments.isEmpty) {
+                        return Center(
+                          child: AppText(
+                            text: 'Be the first to add comment!',
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onSurface.withOpacity(0.6),
+                          ),
+                        );
+                      }
 
-                      return GestureDetector(
-                        onLongPress: () => _showCommentOptions(
-                          updatedPost.id,
-                          comment,
-                          isOwner,
-                        ),
-                        child: Container(
-                          color: Colors
-                              .transparent, // Ensures the entire area is tappable
-                          padding: const EdgeInsets.only(bottom: 16),
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              // comment avatrar
-                              GestureDetector(
-                                onTap: () {
-                                  context.read<AuthCubit>().currentUser!.uid ==
-                                          comment.userId
-                                      ? Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (context) => ProfilePage(
-                                              uid: comment.userId,
-                                            ),
-                                          ),
-                                        )
-                                      : Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (context) =>
-                                                OtherUserProfilePage(
+                      return ListView.builder(
+                        padding: const EdgeInsets.all(16),
+                        itemCount: updatedPost.comments.length,
+                        itemBuilder: (context, index) {
+                          final comment = updatedPost.comments[index];
+                          final isOwner =
+                              context.read<AuthCubit>().currentUser?.uid ==
+                              comment.userId;
+
+                          return GestureDetector(
+                            onLongPress: () => _showCommentOptions(
+                              updatedPost.id,
+                              comment,
+                              isOwner,
+                            ),
+                            child: Container(
+                              color: Colors
+                                  .transparent, // Ensures the entire area is tappable
+                              padding: const EdgeInsets.only(bottom: 16),
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  // comment avatrar
+                                  GestureDetector(
+                                    onTap: () {
+                                      context.read<AuthCubit>().currentUser!.uid ==
+                                              comment.userId
+                                          ? Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) => ProfilePage(
                                                   uid: comment.userId,
                                                 ),
-                                          ),
-                                        );
-                                },
-                                child: _CommentUserAvatar(
-                                  userId: comment.userId,
-                                ),
-                              ),
-                              const SizedBox(width: 12),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    // connent user name
-                                    AppText(
-                                      text: comment.userName,
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.bold,
+                                              ),
+                                            )
+                                          : Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) =>
+                                                    OtherUserProfilePage(
+                                                      uid: comment.userId,
+                                                    ),
+                                              ),
+                                            );
+                                    },
+                                    child: _CommentUserAvatar(
+                                      userId: comment.userId,
                                     ),
+                                  ),
+                                  const SizedBox(width: 12),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        // connent user name
+                                        AppText(
+                                          text: comment.userName,
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.bold,
+                                        ),
 
-                                    // comment
-                                    AppText(text: comment.text, fontSize: 14),
-                                    const SizedBox(height: 4),
-                                    AppText(
-                                      text: _formatTimeAgo(comment.timestamp),
-                                      fontSize: 12,
-                                      color: Theme.of(
-                                        context,
-                                      ).colorScheme.onSurface.withOpacity(0.6),
+                                        // comment
+                                        AppText(text: comment.text, fontSize: 14),
+                                        const SizedBox(height: 4),
+                                        AppText(
+                                          text: _formatTimeAgo(comment.timestamp),
+                                          fontSize: 12,
+                                          color: Theme.of(
+                                            context,
+                                          ).colorScheme.onSurface.withOpacity(0.6),
+                                        ),
+                                      ],
                                     ),
-                                  ],
-                                ),
+                                  ),
+                                ],
                               ),
-                            ],
-                          ),
-                        ),
+                            ),
+                          );
+                        },
                       );
                     },
                   );
